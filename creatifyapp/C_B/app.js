@@ -128,7 +128,7 @@ app.get("/api/profile", authenticate, async (req, res) => {
 //         const posts = await Post.find()
 //     }
 // })
-app.get("/api/posts", authenticate, async (req, res) => {
+app.get("/api/posts", async (req, res) => {
   try {
     const { user } = req;
     const posts = await Post.find().populate("user", "_id username email");
