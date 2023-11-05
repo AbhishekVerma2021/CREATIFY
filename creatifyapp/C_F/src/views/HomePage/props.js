@@ -5,3 +5,7 @@ import {
 export const mapDispatchToProps = (dispatch) => ({
     fetchAllPostData: () => dispatch(fetchAllPostData()) // Use dispatch to dispatch the action
 });
+
+export const mapStateToProps = (state) => ({
+    postFeedData: state.postFeedData,
+});
