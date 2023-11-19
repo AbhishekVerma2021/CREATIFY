@@ -25,7 +25,7 @@ const port = process.env.PORT || 8000;
 app.post("/api/register", async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
-
+    console.log(username, email, password);
     const isExit = await Users.findOne({ email });
     if (isExit) {
       console.log("enter");
@@ -43,7 +43,7 @@ app.post("/api/register", async (req, res, next) => {
         user
           .save()
           .then(() => {
-            res.status(200).send("successfully registered");
+              res.status(200).send("successfully registered");
           })
           .catch((err) => {
             console.log(err);
@@ -57,13 +57,14 @@ app.post("/api/register", async (req, res, next) => {
 });
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
+  console.log(email, password);
   const user = await Users.findOne({ email });
   if (!user) {
-    res.status(401).send("User or password is in invalid");
+    res.status(401).send("Email is in invalid");
   } else {
     const validate = await bcryptjs.compare(password, user.password);
     if (!validate) {
-      res.status(401).send("User or password is invalid");
+      res.status(401).send("Password is invalid");
     } else {
       const payload = {
         id: user._id,
@@ -81,6 +82,21 @@ app.post("/api/login", async (req, res) => {
     }
   }
 });
+
+app.get('/api/validateToken', authenticate, async (req, res) => {
+  // console.log('ValidToken', req.user,"____________")
+  const { username, email, _id, followers, followings } = req.user;
+  console.log('ValidToken', req.user,"____________", Object.values(req.user));
+  const user = {
+    username,
+    email,
+    _id,
+    followers,
+    followings,
+  }
+  res.status(200).send(user);
+
+})
 
 app.post("/api/new-post",authenticate, async (req, res) => {
   try {
@@ -128,11 +144,11 @@ app.get("/api/profile", authenticate, async (req, res) => {
 //         const posts = await Post.find()
 //     }
 // })
-app.get("/api/posts", async (req, res) => {
+app.post("/api/posts", async (req, res) => {
   try {
-    const { user } = req;
+    const { user } = req.body;
     const posts = await Post.find().populate("user", "_id username email");
-    
+    console.log(req.body,user)
     res.status(200).json({ posts, user });
   } catch (error) {
     res.status(200).send(error);

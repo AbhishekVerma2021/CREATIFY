@@ -1,12 +1,11 @@
 import {
-    fetchAllPostData,
+    validateLoginStatus,
 } from '../../Redux/action';
 
 export const mapDispatchToProps = (dispatch) => ({
-    fetchAllPostData: () => dispatch(fetchAllPostData()),
-});
+    validateLoginStatus: (navigate, componentPath) => dispatch(validateLoginStatus(navigate, componentPath)),
+}); 
 
 export const mapStateToProps = (state) => ({
-    postFeedData: state.postFeedData,
     isUserLoggedIn: state.isUserLoggedIn,
-});
+})
