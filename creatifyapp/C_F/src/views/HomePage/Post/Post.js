@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -15,6 +15,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import CommentDialog from '../../../components/CommentDialog';
 import "./Post.css";
 
 
@@ -31,11 +32,11 @@ const ExpandMore = styled((props) => {
 
 const Post = (props) => {
   const [expanded, setExpanded] = React.useState(false);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
-
+  const [openCommentDialog, setOpenCommentDialog] = React.useState(false);
+  const {
+    post,
+    fetchPostsComments,
+  } = props;
   const {
     _id,
     comments,
@@ -43,9 +44,19 @@ const Post = (props) => {
     image,
     caption,
     likes,
-    user, } =  props.post;
+    user, } = post;
 
     const { email, username } = user;
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
+  
+  const handleCommentDialog = async () => {
+    setOpenCommentDialog(!openCommentDialog)
+  }
+
+
   return (
     <Card sx={{ minWidth: "35vw", margin: "40px 0" }}>
       <CardHeader
@@ -76,7 +87,7 @@ const Post = (props) => {
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
-        <IconButton>
+        <IconButton onClick={() => handleCommentDialog()}>
           <CommentIcon />
         </IconButton>
         <IconButton aria-label="share">
@@ -96,6 +107,7 @@ const Post = (props) => {
           {description}
         </CardContent>
       </Collapse>
+      {openCommentDialog && <CommentDialog postId={_id} comments={comments} handleCommentDialog={handleCommentDialog} />}
     </Card>
   );
 }

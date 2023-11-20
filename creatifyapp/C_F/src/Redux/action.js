@@ -14,6 +14,14 @@ import {
   FETCH_PROFILE_DETAILS_FULFILLED,
   FETCH_PROFILE_DETAILS_PENDING,
   FETCH_PROFILE_DETAILS_REJECTED,
+  USER_COMMENT,
+  USER_COMMENT_FULFILLED,
+  USER_COMMENT_PENDING,
+  USER_COMMENT_REJECTED,
+  FETCH_COMMENTS_FOR_POST,
+  FETCH_COMMENTS_FOR_POST_FULFILLED,
+  FETCH_COMMENTS_FOR_POST_REJECTED,
+  FETCH_COMMENTS_FOR_POST_PENDING,
 } from './actionTypes';
 
 import axios from 'axios';
@@ -29,7 +37,6 @@ export const submitUser = (username, email, password) => {
     type: SUBMIT_USER,
     payload: axios.post('http://localhost:8000/api/register', data)
       .then((res) => {
-        console.log(res);
         return res.data; // Make sure to return the relevant data from the Promise
       })
       .catch((error) => {
@@ -50,7 +57,6 @@ export const loginUser = (email, password, navigate) => {
 
     axios.post('http://localhost:8000/api/login', data)
       .then((res) => {
-        console.log(res)
         dispatch({ type: LOGIN_USER_FULFILLED, payload: res });
         navigate('/');
         // dispatch(fetchAllPostData());
@@ -65,7 +71,6 @@ export const fetchAllPostData = () => {
   return (dispatch, getState) => {
     const { activeUserDetails, ussToken } = getState();
 
-    console.log('---------------------------',activeUserDetails, ussToken)
     dispatch({ type: FETCH_ALL_POSTS_PENDING });
 
 
@@ -78,7 +83,6 @@ export const fetchAllPostData = () => {
         },
       })
       .then((res) => {
-        console.log(res)
         dispatch({ type: FETCH_ALL_POSTS_FULFILLED, payload: res.data });
       })
       .catch((err) => {
@@ -88,13 +92,13 @@ export const fetchAllPostData = () => {
 };
 
 
+
+
 export const getActiveProfileDetails = () => {
   return (dispatch, getState) => {
     const { activeUserDetails, ussToken } = getState();
     const { _id } = activeUserDetails;
     
-    
-    console.log(ussToken, activeUserDetails)
     dispatch({ type: FETCH_PROFILE_DETAILS_PENDING });
     axios.get(`http://localhost:8000/api/profile?_id=${_id}`,
     {
@@ -110,7 +114,49 @@ export const getActiveProfileDetails = () => {
   }
 }
 
+export const handleCommentOnPost = (commentString, postId) => {
+  return (dispatch, getState) => {
+    const { ussToken } = getState();
+    dispatch({
+      type: USER_COMMENT,
+      payload: axios.post('http://localhost:8000/api/comment',{
+        comment: commentString,
+        postId,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ussToken}`,
+        },
+      }).then((res) => {
+        return res.data;
+      })
+      .catch((er) => {throw er;})
+    })
+  }
+};
 
+export const fetchPostsComments = (postId) => {
+  return (dispatch, getState) => {
+    const { postsComments, ussToken } = getState();
+    if(!Object.keys(postsComments).includes(postId)) {
+      dispatch({
+        type: FETCH_COMMENTS_FOR_POST,
+        payload: axios.get(`http://localhost:8000/api/fetchComments?postId=${postId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${ussToken}`,
+          },
+        }).then((res) => res.data)
+        .catch((er) => {throw er;})
+      })
+    }
+    else {
+      return Promise.resolve();
+    }
+  }
+}
 
 export const validateLoginStatus = (navigate, componentPath) => {
   const token = localStorage.getItem('TOKEN');
@@ -127,7 +173,6 @@ export const validateLoginStatus = (navigate, componentPath) => {
           authorization: `Bearer ${localStorage.getItem('TOKEN')}`
         }
       }).then(res => {
-        console.log(res)
         dispatch({ type: USER_LOGIN_STATUS_FULFILLED, payload: res.data });
         navigate(componentPath ? componentPath : '/');
       })

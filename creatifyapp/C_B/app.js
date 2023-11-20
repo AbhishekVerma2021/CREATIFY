@@ -43,7 +43,7 @@ app.post("/api/register", async (req, res, next) => {
         user
           .save()
           .then(() => {
-              res.status(200).send("successfully registered");
+            res.status(200).send("successfully registered");
           })
           .catch((err) => {
             console.log(err);
@@ -86,7 +86,7 @@ app.post("/api/login", async (req, res) => {
 app.get('/api/validateToken', authenticate, async (req, res) => {
   // console.log('ValidToken', req.user,"____________")
   const { username, email, _id, followers, followings } = req.user;
-  console.log('ValidToken', req.user,"____________", Object.values(req.user));
+  console.log('ValidToken', req.user, "____________", Object.values(req.user));
   const user = {
     username,
     email,
@@ -98,7 +98,7 @@ app.get('/api/validateToken', authenticate, async (req, res) => {
 
 })
 
-app.post("/api/new-post",authenticate, async (req, res) => {
+app.post("/api/new-post", authenticate, async (req, res) => {
   try {
     const { caption, desc, url } = req.body;
     console.log(caption, desc, url)
@@ -144,11 +144,11 @@ app.get("/api/profile", authenticate, async (req, res) => {
 //         const posts = await Post.find()
 //     }
 // })
-app.post("/api/posts",authenticate, async (req, res) => {
+app.post("/api/posts", authenticate, async (req, res) => {
   try {
     const { user } = req.body;
     const posts = await Post.find().populate("user", "_id username email");
-    console.log(req.body,user)
+    console.log(req.body, user)
     res.status(200).json({ posts, user });
   } catch (error) {
     res.status(200).send(error);
@@ -174,10 +174,10 @@ app.post("/api/comment", authenticate, async (req, res) => {
           username: user.username,
         };
         inpost.comments.push(newComment);
-        console.log(inpost.comments);
+        // console.log(inpost.comments);
 
         await inpost.save();
-        res.send(inpost.comments);
+        res.send({ comments: inpost.comments, postId });
       }
     }
   } catch (er) {
@@ -186,12 +186,26 @@ app.post("/api/comment", authenticate, async (req, res) => {
   }
 });
 
+app.get('/api/fetchComments', async (req, res) => {
+  const { postId } = req.query;
+  try {
+    const inpost = await Post.findById(postId);
+    if (!inpost) {
+      res.send("Post Not Found");
+    }
+    else {
+      res.send({comments: inpost.comments, postId});
+    }
+  } catch (er) {
+    res.send(er);
+  }
+});
+
 app.post("/api/like", authenticate, async (req, res) => {
   try {
     const { user } = req;
     const { like, postId } = req.body;
-    if (like === undefined || postId === undefined)
-    {
+    if (like === undefined || postId === undefined) {
       res.send()
     }
     const feedPost = await Post.findById(postId);
@@ -210,7 +224,7 @@ app.post("/api/like", authenticate, async (req, res) => {
         const indexToRemove = feedPost.likes.findIndex(
           (likeItem) => likeItem.uId === _id
         );
-        console.log(indexToRemove,_id)
+        console.log(indexToRemove, _id)
         if (indexToRemove !== -1) {
           feedPost.likes.splice(indexToRemove, 1);
         }

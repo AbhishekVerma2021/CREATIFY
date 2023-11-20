@@ -1,2 +1,4 @@
 import Post from "./Post";
-export default Post;
+import { connect } from "react-redux";
+import { mapDispatchToProps, mapStateToProps } from "./props";
+export default connect(mapStateToProps, mapDispatchToProps)(Post);
