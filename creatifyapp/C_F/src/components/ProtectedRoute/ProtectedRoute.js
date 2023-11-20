@@ -9,12 +9,14 @@ const ProtectedRoute = (props) => {
     const fetchData = async () => {
       try {
         await validateLoginStatus(navigate, componentPath);
-        setShouldRender(true);
       } catch (error) {
-        setShouldRender(false);
       }
     }
     fetchData();
+  }, [])
+
+  useEffect(() => {
+    setShouldRender(isUserLoggedIn)
   }, [isUserLoggedIn])
   return (<>
     {shouldRender && <Component />}
