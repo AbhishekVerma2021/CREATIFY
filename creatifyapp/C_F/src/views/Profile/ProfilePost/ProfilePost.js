@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState} from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -11,12 +11,12 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import CommentIcon from '@mui/icons-material/Comment';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import "./Post.css";
+import CommentIcon from '@mui/icons-material/Comment';
 
+// import CommentDialog from '../../../components/CommentDialog';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -29,29 +29,42 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-const Post = (props) => {
+const ProfilePost = (props) => {
   const [expanded, setExpanded] = React.useState(false);
+  const {
+    post,
+    activeUserDetails,
+   } = props;
+
+  const {
+    comments,
+    caption,
+    description,
+    image,
+    likes,
+    user,
+  } = post;
+
+  const {
+    username,
+  } = activeUserDetails;
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  const {
-    _id,
-    comments,
-    description,
-    image,
-    caption,
-    likes,
-    user, } =  props.post;
+  const [openCommentDialog, setOpenCommentDialog] = useState(false)
 
-    const { email, username } = user;
+  const handleCommentDialog = () => {
+    setOpenCommentDialog(!openCommentDialog)
+  }
+
   return (
-    <Card sx={{ minWidth: "35vw", margin: "40px 0" }}>
+    <Card sx={{ maxWidth: 245 }}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            {username.slice(0,1).toUpperCase()}
+            <span>{username.slice(0, 1).toUpperCase()}</span>
           </Avatar>
         }
         action={
@@ -59,16 +72,18 @@ const Post = (props) => {
             <MoreVertIcon />
           </IconButton>
         }
-        className='postHeader'
-        sx={{ fontWeight: "700"}}
         title={username}
         subheader="September 14, 2016"
+        sx={{ height: 70, padding: '5px 10px' }}
       />
-      <div className='postImageConatiner'>
-        <img src={image} alt=""/>
-      </div>
-      <CardContent>
-        <Typography variant="body2" sx={{ fontSize: "20px", color: "black" }} color="text.secondary">
+      <CardMedia
+        component="img"
+        height="194"
+        image={image}
+        alt={caption}
+      />
+      <CardContent sx={{ padding: '5px 16px' }}>
+        <Typography variant="body2"  color="text.secondary">
           {caption}
         </Typography>
       </CardContent>
@@ -76,7 +91,7 @@ const Post = (props) => {
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
-        <IconButton>
+        <IconButton aria-label="share" onClick={() => handleCommentDialog()}>
           <CommentIcon />
         </IconButton>
         <IconButton aria-label="share">
@@ -92,13 +107,13 @@ const Post = (props) => {
         </ExpandMore>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent sx={{ width: '35vw' }}>
+        <CardContent>
           {description}
         </CardContent>
       </Collapse>
+      {/* {openCommentDialog && <CommentDialog comments={comments} handleCommentDialog={handleCommentDialog} />} */}
     </Card>
   );
 }
 
-
-export default Post;
+export default ProfilePost;

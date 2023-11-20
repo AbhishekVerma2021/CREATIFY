@@ -1,0 +1,60 @@
+.profilePageMasterContainer {
+  margin: 40px 0 0 0;
+  /* border: 2px solid red; */
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+.profileLeftSection {
+  width: 20%;
+  /* border: 1px solid blue; */
+}
+
+.profileRightSection {
+  width: 80%;
+  /* border: 1px solid green; */
+}
+
+.userProgressDetailsSection {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 20px 0 0 0;
+}
+
+.progressItemContainer {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+  height: 10vh;
+}
+
+.leftProfileItemsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
+  padding: 20px;
+}
+
+.progessLabelContainer {
+  font-weight: 600;
+}
+
+.progressBoxContainer {
+  cursor: pointer;
+}
+
+.profilePostsMasterContainer {
+  margin: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  place-items: center;
+  grid-gap: 20px;
+}

@@ -10,6 +10,10 @@ import {
   FETCH_ALL_POSTS_PENDING,
   FETCH_ALL_POSTS_FULFILLED,
   FETCH_ALL_POSTS_REJECTED,
+  FETCH_PROFILE_DETAILS,
+  FETCH_PROFILE_DETAILS_FULFILLED,
+  FETCH_PROFILE_DETAILS_PENDING,
+  FETCH_PROFILE_DETAILS_REJECTED,
 } from './actionTypes';
 
 import axios from 'axios';
@@ -57,31 +61,11 @@ export const loginUser = (email, password, navigate) => {
   };
 }
 
-
-// export const fetchAllPostData = () => {
-//   return {
-//     type: FETCH_ALL_POSTS,
-//     payload: axios.get('http://localhost:8000/api/posts', {
-
-//     }, {
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: `Bearer ${localStorage.getItem('user:token')}`,
-//       },
-//     })
-//       .then((res) => {console.log(res);return res.data})
-//       .catch((err) => {
-//         return err.response.data;
-//       }),
-//   };
-// };
-
-
 export const fetchAllPostData = () => {
   return (dispatch, getState) => {
-    const { activeUserDetails } = getState();
-    const token = activeUserDetails ? activeUserDetails.token : null;
-    
+    const { activeUserDetails, ussToken } = getState();
+
+    console.log('---------------------------',activeUserDetails, ussToken)
     dispatch({ type: FETCH_ALL_POSTS_PENDING });
 
 
@@ -90,7 +74,7 @@ export const fetchAllPostData = () => {
       {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${ussToken}`,
         },
       })
       .then((res) => {
@@ -106,8 +90,23 @@ export const fetchAllPostData = () => {
 
 export const getActiveProfileDetails = () => {
   return (dispatch, getState) => {
-    // dispatch({ type: FETCH_PROFILE_DETAILS_PENDING });
-    // axios.get(`httpp://localhost:8000/api/profile`,)
+    const { activeUserDetails, ussToken } = getState();
+    const { _id } = activeUserDetails;
+    
+    
+    console.log(ussToken, activeUserDetails)
+    dispatch({ type: FETCH_PROFILE_DETAILS_PENDING });
+    axios.get(`http://localhost:8000/api/profile?_id=${_id}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${ussToken}`,
+      }
+    })
+    .then((res) => {
+      dispatch({ type: FETCH_PROFILE_DETAILS_FULFILLED, payload: res.data });
+    })
+    .catch((err) => {dispatch({ type: FETCH_PROFILE_DETAILS_REJECTED, payload: err.response.data })})
   }
 }
 

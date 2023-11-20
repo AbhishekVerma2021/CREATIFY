@@ -15,6 +15,10 @@ import {
   USER_LOGIN_STATUS_FULFILLED,
   USER_LOGIN_STATUS_PENDING,
   USER_LOGIN_STATUS_REJECTED,
+  FETCH_PROFILE_DETAILS,
+  FETCH_PROFILE_DETAILS_FULFILLED,
+  FETCH_PROFILE_DETAILS_PENDING,
+  FETCH_PROFILE_DETAILS_REJECTED,
 } from './actionTypes';
 
 import { toast } from 'react-toastify';
@@ -23,6 +27,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const initialState = {
   postFeedData: [],
+  profilePostsData: [],
   errorForNoData: false,
   isLoading: false,
   ussToken: '',
@@ -46,7 +51,6 @@ const reducer = (state = initialState, action) => {
     }
     case FETCH_ALL_POSTS_FULFILLED: {
       const { posts } = action.payload;
-      console.log("------------------------", action.payload);
       return {
         ...state,
         postFeedData: posts,
@@ -68,15 +72,12 @@ const reducer = (state = initialState, action) => {
       }
     }
     case SUBMIT_USER: {
-      console.log('-----------------------------------------',action.payload)
-
       return {
         ...state,
         isLoading: true,
       }
     }
     case SUBMIT_USER_FULFILLED: {
-      console.log('-----------------------------------------',action.payload)
       return {
         ...state,
         isLoading: false,
@@ -147,12 +148,15 @@ const reducer = (state = initialState, action) => {
       }
     }
     case USER_LOGIN_STATUS_FULFILLED: {
-      const userData = action.payload; // {username: '', email: ''}
-      console.log('))))))))))))))))))))))))0',action.payload)
+      const userData = action.payload; // {username: '', email: '', _id: ''}
+      console.log('))))))))))))))))))))))))0',action.payload);
+      const token = localStorage.getItem('TOKEN')
+      console.log(token)
       return {
         ...state,
         isUserLoggedIn: true,
         activeUserDetails: userData,
+        ussToken: token,
       }
     }
     case USER_LOGIN_STATUS_PENDING: {
@@ -169,6 +173,29 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isUserLoggedIn: false,
+      }
+    }
+    case FETCH_PROFILE_DETAILS: {
+      return {
+        ...state,
+      }
+    }
+    case FETCH_PROFILE_DETAILS_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case FETCH_PROFILE_DETAILS_FULFILLED: {
+      const { posts } = action.payload;
+      console.log(posts)
+      return {
+        ...state,
+        profilePostsData: posts,
+      }
+    }
+    case FETCH_PROFILE_DETAILS_REJECTED: {
+      return {
+        ...state,
       }
     }
     default: return state;

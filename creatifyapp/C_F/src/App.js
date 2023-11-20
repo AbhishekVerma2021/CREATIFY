@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import HomePage from './views/HomePage';
 import { Provider } from 'react-redux';
-import store from './Redux/store'; 
+import store from './Redux/store';
 import Login from './views/LoginSignup/Login';
 import Signup from './views/LoginSignup/Signup';
 import { ToastContainer } from 'react-toastify';
@@ -13,16 +13,26 @@ function App() {
     <div>
       <Provider store={store}>
         <Router>
-        <Sidebar>
           <Routes>
-            <Route path='/' element={<ProtectedRoute componentPath={'/'} Component={HomePage} />}/>
-            <Route path='/profile' element={<ProtectedRoute componentPath={'/profile'} Component={Profile} />}/>
+            <Route
+              path='/'
+              element={
+                <Sidebar>
+                  <ProtectedRoute componentPath={'/'} Component={HomePage} />
+                </Sidebar>
+              }
+            />
+            <Route path='/profile' element={
+              <Sidebar>
+                <ProtectedRoute componentPath={'/profile'} Component={Profile} />
+              </Sidebar>
+            }
+            />
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<Signup />} />
           </Routes>
-        </Sidebar>
         </Router>
-        <ToastContainer/>
+        <ToastContainer />
       </Provider>
     </div>
   );
