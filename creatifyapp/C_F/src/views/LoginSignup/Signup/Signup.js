@@ -56,10 +56,8 @@ const Signup = (props) => {
     setValidEmail(isValidEmail);
     setPasswordMatch(password === confirmPassword);
   }, [email, password, confirmPassword])
-  console.log(userRegistrationSuccessful)
 
   useEffect(() => {
-    console.log(userRegistrationSuccessful)
     if(userRegistrationSuccessful)
       navigate('/login');
   }, [userRegistrationSuccessful])
@@ -79,7 +77,6 @@ const Signup = (props) => {
       else
       {
         const username = firstName + ' ' + lastName;
-        console.log(username, email, password, firstName);
         try{
           await submitUser(username, email, password);
         } catch(err) {

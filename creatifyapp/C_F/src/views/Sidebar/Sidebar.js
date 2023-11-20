@@ -51,14 +51,7 @@ const handleHomePage = () => {
 }
 
 const handleProfile = async () => {
-  // console.log(activeUserDetails)
   navigate('/profile');
-  // try {
-  //   await getActiveProfileDetails();
-  //   toast.success('Profile was successfully fetched', { position: toast.POSITION.BOTTOM_LEFT }); 
-  // } catch (er) {
-  //   toast.error('Could not load profile', { position: toast.POSITION.BOTTOM_LEFT})
-  // }
 }
 
 const handleLogout = () => {

@@ -16,7 +16,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CommentIcon from '@mui/icons-material/Comment';
 
-// import CommentDialog from '../../../components/CommentDialog';
+import CommentDialog from '../../../components/CommentDialog';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -43,6 +43,7 @@ const ProfilePost = (props) => {
     image,
     likes,
     user,
+    _id,
   } = post;
 
   const {
@@ -111,7 +112,7 @@ const ProfilePost = (props) => {
           {description}
         </CardContent>
       </Collapse>
-      {/* {openCommentDialog && <CommentDialog comments={comments} handleCommentDialog={handleCommentDialog} />} */}
+      {openCommentDialog && <CommentDialog postId={_id} comments={comments} handleCommentDialog={handleCommentDialog} />}
     </Card>
   );
 }

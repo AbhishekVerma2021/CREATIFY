@@ -1,0 +1,4 @@
+.commentsListContainer {
+  max-height: 53vh;
+  overflow-y: auto;
+}

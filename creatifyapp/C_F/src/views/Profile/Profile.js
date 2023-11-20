@@ -28,7 +28,6 @@ const Profile = (props) => {
       toast.error('Could not fetch user details', { position: toast.POSITION.BOTTOM_LEFT});
     }
   }, [])
-  console.log(profilePostsData);
   return (<>
     <div className='profilePageMasterContainer'>
       <div className='profileLeftSection'>
