@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useId, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -31,12 +31,17 @@ const ExpandMore = styled((props) => {
 }));
 
 const Post = (props) => {
-  const [expanded, setExpanded] = React.useState(false);
-  const [openCommentDialog, setOpenCommentDialog] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [openCommentDialog, setOpenCommentDialog] = useState(false);
+  const [like, setLike] = useState(false);
   const {
     post,
     fetchPostsComments,
+    activeUserDetails,
+    handleLikesAndDislikes,
+    postsLikes,
   } = props;
+
   const {
     _id,
     comments,
@@ -45,24 +50,38 @@ const Post = (props) => {
     caption,
     likes,
     user, } = post;
+  const postId = _id;
+  const userId = activeUserDetails?._id;
 
-    const { email, username } = user;
-
+  const { email, username } = user;
+  useEffect(() => {
+    let likesArray = [];
+    postsLikes && postsLikes[postId] && postsLikes[postId].forEach((like) => likesArray.push(like.uId));
+    setLike(likesArray.includes(userId));
+  },[])
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  
+
   const handleCommentDialog = async () => {
     setOpenCommentDialog(!openCommentDialog)
   }
 
+  const handleLikes = async () => {
+    try {
+      await handleLikesAndDislikes(postId, like);
+    } catch (e) {
+      alert('LIKE ERROR: ' + e.message)
+    }
+    setLike(!like);
+  }
 
   return (
     <Card sx={{ minWidth: "35vw", margin: "40px 0" }}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            {username.slice(0,1).toUpperCase()}
+            {username.slice(0, 1).toUpperCase()}
           </Avatar>
         }
         action={
@@ -71,12 +90,12 @@ const Post = (props) => {
           </IconButton>
         }
         className='postHeader'
-        sx={{ fontWeight: "700"}}
+        sx={{ fontWeight: "700" }}
         title={username}
         subheader="September 14, 2016"
       />
       <div className='postImageConatiner'>
-        <img src={image} alt=""/>
+        <img src={image} alt="" />
       </div>
       <CardContent>
         <Typography variant="body2" sx={{ fontSize: "20px", color: "black" }} color="text.secondary">
@@ -84,8 +103,11 @@ const Post = (props) => {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
+        <IconButton
+          aria-label="add to favorites"
+          onClick={() => handleLikes()}
+        >
+          <FavoriteIcon style={{ color: like ? 'red' : 'inherit' }}/>
         </IconButton>
         <IconButton onClick={() => handleCommentDialog()}>
           <CommentIcon />
@@ -107,7 +129,7 @@ const Post = (props) => {
           {description}
         </CardContent>
       </Collapse>
-      {openCommentDialog && <CommentDialog postId={_id} comments={comments} handleCommentDialog={handleCommentDialog} />}
+      {openCommentDialog && <CommentDialog postId={postId} comments={comments} handleCommentDialog={handleCommentDialog} />}
     </Card>
   );
 }
