@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -30,10 +30,14 @@ const ExpandMore = styled((props) => {
 }));
 
 const ProfilePost = (props) => {
-  const [expanded, setExpanded] = React.useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [openCommentDialog, setOpenCommentDialog] = useState(false)
+  const [like, setLike] = useState(false);
   const {
     post,
     activeUserDetails,
+    handleLikesAndDislikes,
+    postsLikes,
    } = props;
 
   const {
@@ -50,14 +54,31 @@ const ProfilePost = (props) => {
     username,
   } = activeUserDetails;
 
+  const postId = _id;
+  const userId = activeUserDetails?._id;
+  useEffect(() => {
+    let likesArray = [];
+    console.log(postsLikes)
+    postsLikes && postsLikes[postId] && postsLikes[postId].forEach((like) => likesArray.push(like.uId));
+    setLike(likesArray.includes(userId));
+  },[])
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
 
-  const [openCommentDialog, setOpenCommentDialog] = useState(false)
 
   const handleCommentDialog = () => {
     setOpenCommentDialog(!openCommentDialog)
+  }
+
+  const handleLikes = async () => {
+    try {
+      await handleLikesAndDislikes(postId, like);
+    } catch (e) {
+      alert('LIKE ERROR: ' + e.message)
+    }
+    setLike(!like);
   }
 
   return (
@@ -89,8 +110,11 @@ const ProfilePost = (props) => {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
+        <IconButton
+          aria-label="add to favorites"
+          onClick={() => handleLikes()}
+        >
+          <FavoriteIcon style={{ color: like ? 'red' : 'inherit' }}/>
         </IconButton>
         <IconButton aria-label="share" onClick={() => handleCommentDialog()}>
           <CommentIcon />

@@ -22,6 +22,10 @@ import {
   FETCH_COMMENTS_FOR_POST_FULFILLED,
   FETCH_COMMENTS_FOR_POST_REJECTED,
   FETCH_COMMENTS_FOR_POST_PENDING,
+  HANDLE_LIKES,
+  HANDLE_LIKES_FULFILLED,
+  HANDLE_LIKES_REJECTED,
+  HANDLE_LIKES_PENDING,
 } from './actionTypes';
 
 import axios from 'axios';
@@ -67,6 +71,32 @@ export const loginUser = (email, password, navigate) => {
   };
 }
 
+export const validateLoginStatus = (navigate, componentPath) => {
+  const token = localStorage.getItem('TOKEN');
+  if (!token) {
+    return (dispatch) => {
+      dispatch({ type: USER_LOGIN_STATUS_REJECTED, payload: { message: 'Sorry!! You are not authenticated' } })
+      navigate('/login');
+    }
+  }
+  else {
+    return (dispatch) => {
+      axios.get('http://localhost:8000/api/validateToken', {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem('TOKEN')}`
+        }
+      }).then(res => {
+        dispatch({ type: USER_LOGIN_STATUS_FULFILLED, payload: res.data });
+        navigate(componentPath ? componentPath : '/');
+      })
+        .catch(er => {
+          dispatch({ type: USER_LOGIN_STATUS_REJECTED, payload: { message: 'Sorry!! You are not authenticated' } });
+          navigate('/login');
+        });
+    };
+  }
+};
+
 export const fetchAllPostData = () => {
   return (dispatch, getState) => {
     const { activeUserDetails, ussToken } = getState();
@@ -90,8 +120,6 @@ export const fetchAllPostData = () => {
       });
   };
 };
-
-
 
 
 export const getActiveProfileDetails = () => {
@@ -158,28 +186,29 @@ export const fetchPostsComments = (postId) => {
   }
 }
 
-export const validateLoginStatus = (navigate, componentPath) => {
-  const token = localStorage.getItem('TOKEN');
-  if (!token) {
-    return (dispatch) => {
-      dispatch({ type: USER_LOGIN_STATUS_REJECTED, payload: { message: 'Sorry!! You are not authenticated' } })
-      navigate('/login');
-    }
-  }
-  else {
-    return (dispatch) => {
-      axios.get('http://localhost:8000/api/validateToken', {
+export const handleLikesAndDislikes = (postId, like) => {
+  return (dispatch, getState) => {
+    const { ussToken, activeUserDetails } = getState();
+    const { _id } = activeUserDetails;
+    dispatch({
+      type: HANDLE_LIKES,
+      payload: axios.post(`http://localhost:8000/api/like`,
+      {
+        postId,
+        like: !like,
+      },
+      {
         headers: {
-          authorization: `Bearer ${localStorage.getItem('TOKEN')}`
-        }
-      }).then(res => {
-        dispatch({ type: USER_LOGIN_STATUS_FULFILLED, payload: res.data });
-        navigate(componentPath ? componentPath : '/');
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ussToken}`,
+        },
       })
-        .catch(er => {
-          dispatch({ type: USER_LOGIN_STATUS_REJECTED, payload: { message: 'Sorry!! You are not authenticated' } });
-          navigate('/login');
-        });
-    };
+      .then((res) => {
+        dispatch(fetchAllPostData());
+        return res.data;
+      })
+      .catch((er) => {throw er;})
+    })
   }
-};
+}
+

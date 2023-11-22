@@ -27,6 +27,10 @@ import {
   USER_COMMENT_FULFILLED,
   USER_COMMENT_PENDING,
   USER_COMMENT_REJECTED,
+  HANDLE_LIKES,
+  HANDLE_LIKES_FULFILLED,
+  HANDLE_LIKES_REJECTED,
+  HANDLE_LIKES_PENDING,
 } from './actionTypes';
 
 import { toast } from 'react-toastify';
@@ -49,6 +53,7 @@ const initialState = {
   },
   userRegistrationSuccessful: undefined,
   postsComments: {},
+  postsLikes: {},
 };
 
 const reducer = (state = initialState, action) => {
@@ -60,11 +65,15 @@ const reducer = (state = initialState, action) => {
     }
     case FETCH_ALL_POSTS_FULFILLED: {
       const { posts } = action.payload;
+      console.log(posts)
+      const likesForPost = {};
+      posts.forEach((post) => likesForPost[post._id] = post.likes);
       return {
         ...state,
         postFeedData: posts,
         errorForNoData: false,
         isLoading: false,
+        postsLikes: {...state.postsLikes, ...likesForPost}
       }
     }
     case FETCH_ALL_POSTS_REJECTED: {
@@ -191,9 +200,13 @@ const reducer = (state = initialState, action) => {
     }
     case FETCH_PROFILE_DETAILS_FULFILLED: {
       const { posts } = action.payload;
+      console.log(posts)
+      const likesForPost = {};
+      posts.forEach((post) => likesForPost[post._id] = post.likes);
       return {
         ...state,
         profilePostsData: posts,
+        postsLikes: {...state.postsLikes, ...likesForPost}
       }
     }
     case FETCH_PROFILE_DETAILS_REJECTED: {
@@ -202,6 +215,11 @@ const reducer = (state = initialState, action) => {
       }
     }
     case USER_COMMENT: {
+      return {
+        ...state,
+      }
+    }
+    case USER_COMMENT_PENDING: {
       return {
         ...state,
       }
@@ -215,17 +233,17 @@ const reducer = (state = initialState, action) => {
         postsComments: {...state.postsComments, ...postAndItsComments}
       }
     }
-    case USER_COMMENT_PENDING: {
-      return {
-        ...state,
-      }
-    }
     case USER_COMMENT_REJECTED: {
       return {
         ...state,
       }
     }
     case FETCH_COMMENTS_FOR_POST: {
+      return {
+        ...state,
+      }
+    }
+    case FETCH_COMMENTS_FOR_POST_PENDING: {
       return {
         ...state,
       }
@@ -239,12 +257,28 @@ const reducer = (state = initialState, action) => {
         postsComments: { ...state.postsComments, ...newPostComments }
       }
     }
-    case FETCH_COMMENTS_FOR_POST_PENDING: {
+    case FETCH_COMMENTS_FOR_POST_REJECTED: {
       return {
         ...state,
       }
     }
-    case FETCH_COMMENTS_FOR_POST_REJECTED: {
+    case HANDLE_LIKES: {
+      return {
+        ...state,
+      }
+    }
+    case HANDLE_LIKES_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case HANDLE_LIKES_FULFILLED: {
+      console.log(action.payload)
+      return {
+        ...state,
+      }
+    }
+    case HANDLE_LIKES_REJECTED: {
       return {
         ...state,
       }
