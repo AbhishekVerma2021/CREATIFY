@@ -16,7 +16,10 @@ const userSchema=new mongoose.Schema({
     password:{
         type:String,
         required:true
-        
+    },
+    date: {
+        type: Date,
+        default: Date.now
     }
 })
 const Users= new mongoose.model("USER",userSchema);

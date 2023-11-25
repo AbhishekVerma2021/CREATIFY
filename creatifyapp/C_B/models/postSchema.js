@@ -35,7 +35,10 @@ const userSchema=new mongoose.Schema({
     },
     comments: [commentSchema],
     likes: [likesSchema],
-    // date: Date.now(),
+    date: {
+        type: Date,
+        default: Date.now
+    }
 })
 const Post= new mongoose.model("POST",userSchema);
 module.exports=Post;

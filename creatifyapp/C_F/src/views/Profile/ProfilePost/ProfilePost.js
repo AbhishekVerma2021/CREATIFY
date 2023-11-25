@@ -48,8 +48,19 @@ const ProfilePost = (props) => {
     likes,
     user,
     _id,
+    date,
   } = post;
-
+  const inputDate = new Date(date);
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true, // Use 12-hour clock
+  };
+  
+  const formattedDate = new Intl.DateTimeFormat('en-US', options).format(inputDate);
   const {
     username,
   } = activeUserDetails;
@@ -95,7 +106,7 @@ const ProfilePost = (props) => {
           </IconButton>
         }
         title={username}
-        subheader="September 14, 2016"
+        subheader={formattedDate}
         sx={{ height: 70, padding: '5px 10px' }}
       />
       <CardMedia

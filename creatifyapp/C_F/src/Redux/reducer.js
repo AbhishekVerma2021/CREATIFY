@@ -31,6 +31,14 @@ import {
   HANDLE_LIKES_FULFILLED,
   HANDLE_LIKES_REJECTED,
   HANDLE_LIKES_PENDING,
+  UPLOAD_IMAGE,
+  UPLOAD_IMAGE_FULFILLED,
+  UPLOAD_IMAGE_REJECTED,
+  UPLOAD_IMAGE_PENDING,
+  CREATE_POST,
+  CREATE_POST_PENDING,
+  CREATE_POST_FULFILLED,
+  CREATE_POST_REJECTED,
 } from './actionTypes';
 
 import { toast } from 'react-toastify';
@@ -54,6 +62,7 @@ const initialState = {
   userRegistrationSuccessful: undefined,
   postsComments: {},
   postsLikes: {},
+  imageURL: '',
 };
 
 const reducer = (state = initialState, action) => {
@@ -279,6 +288,60 @@ const reducer = (state = initialState, action) => {
       }
     }
     case HANDLE_LIKES_REJECTED: {
+      return {
+        ...state,
+      }
+    }
+
+    case UPLOAD_IMAGE: {
+      return {
+        ...state,
+      }
+    }
+    case UPLOAD_IMAGE_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case UPLOAD_IMAGE_FULFILLED: {
+      const { secure_url } = action.payload;
+      return {
+        ...state,
+        imageURL: secure_url,
+      }
+    }
+    case UPLOAD_IMAGE_REJECTED: {
+      const {
+       data: {
+        message
+       } 
+      } = action.payload;
+
+      toast.error(message, { position: toast.POSITION.BOTTOM_LEFT })
+      return {
+        ...state,
+      }
+    }
+
+    case CREATE_POST: {
+      return {
+        ...state,
+      }
+    }
+    case CREATE_POST_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case CREATE_POST_FULFILLED: {
+      console.log(action.payload);
+      toast.success(action.payload, { position: toast.POSITION.BOTTOM_LEFT })
+      return {
+        ...state,
+      }
+    }
+    case CREATE_POST_REJECTED: {
+      console.log(action.payload)
       return {
         ...state,
       }

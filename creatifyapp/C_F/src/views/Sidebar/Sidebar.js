@@ -17,6 +17,7 @@ import Avatar from '@mui/material/Avatar';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HomeIcon from '@mui/icons-material/Home';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import './Sidebar.css';
 import { red } from '@mui/material/colors';
 import { useNavigate } from 'react-router-dom';
@@ -50,8 +51,12 @@ const handleHomePage = () => {
   navigate('/');
 }
 
-const handleProfile = async () => {
+const handleProfile = () => {
   navigate('/profile');
+}
+
+const handleCreatePost = () => {
+  navigate('/createPost');
 }
 
 const handleLogout = () => {
@@ -92,6 +97,14 @@ const handleLogout = () => {
               <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary={'Profile'} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem key={'Create new post'} disablePadding onClick={() => handleCreatePost()}>
+          <ListItemButton>
+            <ListItemIcon>
+              <AddBoxIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Create new post'} />
           </ListItemButton>
         </ListItem>
         <ListItem key={'Logout'} disablePadding onClick={() => handleLogout()}>
@@ -167,7 +180,7 @@ const handleLogout = () => {
         <Box
           component="main"
           className='boxContainerForFeedSection'
-          sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+          sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` }, marginTop: "50px" }}
         >
           {children}
         </Box>

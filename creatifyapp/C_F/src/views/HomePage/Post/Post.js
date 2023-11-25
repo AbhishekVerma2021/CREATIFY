@@ -49,11 +49,29 @@ const Post = (props) => {
     image,
     caption,
     likes,
-    user, } = post;
+    user,
+    date
+  } = post;
+  const inputDate = new Date(date);
+  const options = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true, // Use 12-hour clock
+  };
+  
+  const formattedDate = new Intl.DateTimeFormat('en-US', options).format(inputDate);
   const postId = _id;
   const userId = activeUserDetails?._id;
-
-  const { email, username } = user;
+  let email = '';
+  let username = '';
+  if (user)
+  {
+    email = user.email;
+    username = user.username;
+  }
   useEffect(() => {
     let likesArray = [];
     postsLikes && postsLikes[postId] && postsLikes[postId].forEach((like) => likesArray.push(like.uId));
@@ -92,7 +110,7 @@ const Post = (props) => {
         className='postHeader'
         sx={{ fontWeight: "700" }}
         title={username}
-        subheader="September 14, 2016"
+        subheader={formattedDate}
       />
       <div className='postImageConatiner'>
         <img src={image} alt="" />

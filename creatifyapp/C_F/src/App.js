@@ -8,6 +8,7 @@ import { ToastContainer } from 'react-toastify';
 import ProtectedRoute from './components/ProtectedRoute';
 import Profile from './views/Profile';
 import Sidebar from './views/Sidebar';
+import CreatePost from './views/CreatePost';
 function App() {
   return (
     <div>
@@ -15,8 +16,7 @@ function App() {
         <Router>
           <Routes>
             <Route
-              path='/'
-              element={
+              path='/' element={
                 <Sidebar>
                   <ProtectedRoute componentPath={'/'} Component={HomePage} />
                 </Sidebar>
@@ -25,6 +25,12 @@ function App() {
             <Route path='/profile' element={
               <Sidebar>
                 <ProtectedRoute componentPath={'/profile'} Component={Profile} />
+              </Sidebar>
+            }
+            />
+            <Route path='/createPost' element={
+              <Sidebar>
+                <ProtectedRoute componentPath={'/createPost'} Component={CreatePost} />
               </Sidebar>
             }
             />
