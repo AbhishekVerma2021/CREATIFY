@@ -26,6 +26,14 @@ import {
   HANDLE_LIKES_FULFILLED,
   HANDLE_LIKES_REJECTED,
   HANDLE_LIKES_PENDING,
+  UPLOAD_IMAGE,
+  UPLOAD_IMAGE_FULFILLED,
+  UPLOAD_IMAGE_REJECTED,
+  UPLOAD_IMAGE_PENDING,
+  CREATE_POST,
+  CREATE_POST_PENDING,
+  CREATE_POST_FULFILLED,
+  CREATE_POST_REJECTED,
 } from './actionTypes';
 
 import axios from 'axios';
@@ -126,19 +134,19 @@ export const getActiveProfileDetails = () => {
   return (dispatch, getState) => {
     const { activeUserDetails, ussToken } = getState();
     const { _id } = activeUserDetails;
-    
+
     dispatch({ type: FETCH_PROFILE_DETAILS_PENDING });
     axios.get(`http://localhost:8000/api/profile?_id=${_id}`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${ussToken}`,
-      }
-    })
-    .then((res) => {
-      dispatch({ type: FETCH_PROFILE_DETAILS_FULFILLED, payload: res.data });
-    })
-    .catch((err) => {dispatch({ type: FETCH_PROFILE_DETAILS_REJECTED, payload: err.response.data })})
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ussToken}`,
+        }
+      })
+      .then((res) => {
+        dispatch({ type: FETCH_PROFILE_DETAILS_FULFILLED, payload: res.data });
+      })
+      .catch((err) => { dispatch({ type: FETCH_PROFILE_DETAILS_REJECTED, payload: err.response.data }) })
   }
 }
 
@@ -147,19 +155,19 @@ export const handleCommentOnPost = (commentString, postId) => {
     const { ussToken } = getState();
     dispatch({
       type: USER_COMMENT,
-      payload: axios.post('http://localhost:8000/api/comment',{
+      payload: axios.post('http://localhost:8000/api/comment', {
         comment: commentString,
         postId,
       },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${ussToken}`,
-        },
-      }).then((res) => {
-        return res.data;
-      })
-      .catch((er) => {throw er;})
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${ussToken}`,
+          },
+        }).then((res) => {
+          return res.data;
+        })
+        .catch((er) => { throw er; })
     })
   }
 };
@@ -167,17 +175,17 @@ export const handleCommentOnPost = (commentString, postId) => {
 export const fetchPostsComments = (postId) => {
   return (dispatch, getState) => {
     const { postsComments, ussToken } = getState();
-    if(!Object.keys(postsComments).includes(postId)) {
+    if (!Object.keys(postsComments).includes(postId)) {
       dispatch({
         type: FETCH_COMMENTS_FOR_POST,
         payload: axios.get(`http://localhost:8000/api/fetchComments?postId=${postId}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${ussToken}`,
-          },
-        }).then((res) => res.data)
-        .catch((er) => {throw er;})
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${ussToken}`,
+            },
+          }).then((res) => res.data)
+          .catch((er) => { throw er; })
       })
     }
     else {
@@ -193,22 +201,83 @@ export const handleLikesAndDislikes = (postId, like) => {
     dispatch({
       type: HANDLE_LIKES,
       payload: axios.post(`http://localhost:8000/api/like`,
-      {
-        postId,
-        like: !like,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${ussToken}`,
+        {
+          postId,
+          like: !like,
         },
-      })
-      .then((res) => {
-        dispatch(fetchAllPostData());
-        return res.data;
-      })
-      .catch((er) => {throw er;})
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${ussToken}`,
+          },
+        })
+        .then((res) => {
+          dispatch(fetchAllPostData());
+          return res.data;
+        })
+        .catch((er) => { throw er; })
     })
   }
-}
+};
+
+export const uploadImageToCloud = (image) => {
+  const formData = new FormData();
+  formData.append('file', image);
+  formData.append('upload_preset', 'creatify');
+  formData.append('cloud_name', 'dbqsuayy3');
+
+  return (dispatch) => {
+    dispatch({ type: UPLOAD_IMAGE_PENDING });
+
+    // Return a promise that resolves when the image upload is successful
+    return axios.post('https://api.cloudinary.com/v1_1/dbqsuayy3/image/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+      .then((res) => {
+        dispatch({ type: UPLOAD_IMAGE_FULFILLED, payload: res.data });
+        // Resolve the promise with the imageURL
+        return res.data.secure_url;
+      })
+      .catch((err) => {
+        dispatch({ type: UPLOAD_IMAGE_REJECTED, payload: err.response });
+        // Reject the promise with the error
+        throw err;
+      });
+  };
+};
+
+export const createPost = (postData) => {
+  const { image, caption, description } = postData;
+  return async (dispatch, getState) => {
+    try {
+      const imageURL = await dispatch(uploadImageToCloud(image));
+      const { ussToken } = getState();
+      if (imageURL) {
+        dispatch({ type: CREATE_POST_PENDING });
+        axios.post('http://localhost:8000/api/new-post', {
+          url: imageURL,
+          desc: description,
+          caption,
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${ussToken}`,
+          }
+        }).then((res) => {
+          dispatch({ type: CREATE_POST_FULFILLED, payload: res.data });
+        }).catch((er) => {
+          dispatch({ type: CREATE_POST_REJECTED, payload: er.response });
+        });
+      } else {
+        dispatch({ type: CREATE_POST_REJECTED, payload: { message: 'Image upload failed' } });
+      }
+    } catch (er) {
+      console.error('Error creating post:', er);
+      dispatch({ type: CREATE_POST_REJECTED, payload: { message: 'Error creating post' } });
+    }
+  };
+};
+
 

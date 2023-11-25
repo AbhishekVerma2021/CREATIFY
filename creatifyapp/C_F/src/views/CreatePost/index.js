@@ -1,2 +1,4 @@
 import CreatePost from "./CreatePost";
-export default CreatePost;
+import { connect } from "react-redux";
+import { mapDispatchToProps, mapStateToProps } from "./props";
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePost);

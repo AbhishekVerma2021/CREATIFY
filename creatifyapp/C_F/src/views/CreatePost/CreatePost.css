@@ -1,0 +1,34 @@
+.masterCreatePostContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.imagePreviewContainer {
+  width: 35vw;
+  height: 60vh;
+  display: flex;
+  justify-content: center;
+}
+
+.createPostCardContainer {
+  display: flex;
+  justify-content: center;
+  width: 40vw;
+}
+
+.createPostFormContainer {
+  padding: 20px;
+}
+
+
+.imagePreviewContainer > img {
+  max-width: 40vw;
+  max-height: 70vh;
+}
+
+.createPostButtonsContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px
+}
