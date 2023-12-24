@@ -34,6 +34,9 @@ import {
   CREATE_POST_PENDING,
   CREATE_POST_FULFILLED,
   CREATE_POST_REJECTED,
+  FOLLOW_ACCOUNT_PENDING,
+  FOLLOW_ACCOUNT_FULFILLED,
+  FOLLOW_ACCOUNT_REJECTED,
 } from './actionTypes';
 
 import axios from 'axios';
@@ -280,4 +283,28 @@ export const createPost = (postData) => {
   };
 };
 
+
+export const followAccount = (postUserId) => {
+  console.log(postUserId);
+  return (dispatch, getState) => {
+    const { ussToken } = getState();
+    console.log(ussToken);
+    dispatch({ type: FOLLOW_ACCOUNT_PENDING });
+    axios.post('http://localhost:8000/api/follow', {
+      followedAcountId: postUserId,
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${ussToken}`,
+      },
+    }).then( res => {
+      console.log(res)
+      dispatch({ type: FOLLOW_ACCOUNT_FULFILLED, payload: res.data });
+    }).catch( er => {
+      console.log(er)
+      dispatch({ type: FOLLOW_ACCOUNT_REJECTED, payload: er.message })
+    })
+  }
+}
 

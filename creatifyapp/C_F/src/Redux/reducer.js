@@ -39,6 +39,10 @@ import {
   CREATE_POST_PENDING,
   CREATE_POST_FULFILLED,
   CREATE_POST_REJECTED,
+  FOLLOW_ACCOUNT,
+  FOLLOW_ACCOUNT_PENDING,
+  FOLLOW_ACCOUNT_FULFILLED,
+  FOLLOW_ACCOUNT_REJECTED,
 } from './actionTypes';
 
 import { toast } from 'react-toastify';
@@ -57,7 +61,7 @@ const initialState = {
     email: '',
     _id: '',
     followers: [],
-    followings: [],
+    following: [],
   },
   userRegistrationSuccessful: undefined,
   postsComments: {},
@@ -133,7 +137,8 @@ const reducer = (state = initialState, action) => {
       }
     }
     case LOGIN_USER_FULFILLED: {
-      const { data: { token, user: { username, email, _id } } } = action.payload;
+      const { data: { token, user: { username, email, _id, followers, following, } } } = action.payload;
+      console.log(following,action.payload)
       toast.success(`Welcome ${username}`, {
         position: toast.POSITION.BOTTOM_LEFT
       });
@@ -142,7 +147,10 @@ const reducer = (state = initialState, action) => {
         username,
         email,
         _id,
+        following,
+        followers,
       }
+      console.log(user)
       return {
         ...state,
         isLoading: false,
@@ -205,6 +213,7 @@ const reducer = (state = initialState, action) => {
     case FETCH_PROFILE_DETAILS_PENDING: {
       return {
         ...state,
+        isLoading: true,
       }
     }
     case FETCH_PROFILE_DETAILS_FULFILLED: {
@@ -342,6 +351,37 @@ const reducer = (state = initialState, action) => {
     }
     case CREATE_POST_REJECTED: {
       console.log(action.payload)
+      return {
+        ...state,
+      }
+    }
+
+    case FOLLOW_ACCOUNT: {
+      return {
+        ...state,
+      }
+    }
+    case FOLLOW_ACCOUNT_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case FOLLOW_ACCOUNT_FULFILLED: {
+      const { followers, following } = action.payload;
+      toast.success('Followed!!', { position: toast.POSITION.BOTTOM_LEFT });
+
+      return {
+        ...state,
+        activeUserDetails: {
+          ...state.activeUserDetails,
+          followers,
+          following,
+        }
+      }
+    }
+    case FOLLOW_ACCOUNT_REJECTED: {
+      console.log(action.payload)
+      toast.error('Some Error occured', { position: toast.POSITION.BOTTOM_LEFT});
       return {
         ...state,
       }

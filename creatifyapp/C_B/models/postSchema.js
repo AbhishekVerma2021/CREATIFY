@@ -14,14 +14,10 @@ const userSchema=new mongoose.Schema({
     caption:{
         type:String,
         required:true,
-       
-
     },
     description:{
         type:String,
         required:true,
-      
-
     },
     image:{
         type:String,

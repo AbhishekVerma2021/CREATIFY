@@ -9,4 +9,5 @@ export const mapDispatchToProps = (dispatch) => ({
 export const mapStateToProps = (state) => ({
     postFeedData: state.postFeedData,
     isUserLoggedIn: state.isUserLoggedIn,
+    activeUserDetails: state.activeUserDetails,
 });
