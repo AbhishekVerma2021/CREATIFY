@@ -16,6 +16,12 @@ import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CommentDialog from '../../../components/CommentDialog';
+// import followIcon from '../../../images/follow.svg';
+// import followedIcon from '../../../images/following.svg';
+// import avatar from '../../../images/avatar.svg'
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import "./Post.css";
 
 
@@ -34,12 +40,14 @@ const Post = (props) => {
   const [expanded, setExpanded] = useState(false);
   const [openCommentDialog, setOpenCommentDialog] = useState(false);
   const [like, setLike] = useState(false);
+  const [follow, setFollow] = useState(false);
   const {
     post,
     fetchPostsComments,
     activeUserDetails,
     handleLikesAndDislikes,
     postsLikes,
+    followAccount,
   } = props;
 
   const {
@@ -53,6 +61,9 @@ const Post = (props) => {
     date
   } = post;
   const inputDate = new Date(date);
+
+  
+
   const options = {
     year: 'numeric',
     month: 'long',
@@ -67,14 +78,30 @@ const Post = (props) => {
   const userId = activeUserDetails?._id;
   let email = '';
   let username = '';
+  let postUserId = '';
   if (user)
   {
     email = user.email;
     username = user.username;
+    postUserId = user._id;
   }
+
+  useEffect(() => {
+    const { following } = activeUserDetails;
+    let followFlag = false;
+    following && following.length > 0 && following.forEach( followedUser => {
+      if(followedUser.uId === postUserId)
+      {
+        followFlag=true;
+      }
+    })
+    setFollow(followFlag);
+  }, [activeUserDetails]);
+
   useEffect(() => {
     let likesArray = [];
     postsLikes && postsLikes[postId] && postsLikes[postId].forEach((like) => likesArray.push(like.uId));
+    const { following } = activeUserDetails;
     setLike(likesArray.includes(userId));
   },[])
   const handleExpandClick = () => {
@@ -94,6 +121,14 @@ const Post = (props) => {
     setLike(!like);
   }
 
+  const handleFollowClick = async () => {
+    try {
+      await followAccount(postUserId);
+    } catch (e) {
+      alert('Something went wrong')
+    }
+  }
+
   return (
     <Card sx={{ minWidth: "35vw", margin: "40px 0" }}>
       <CardHeader
@@ -103,8 +138,8 @@ const Post = (props) => {
           </Avatar>
         }
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
+           postUserId !== userId && <IconButton aria-label="settings" onClick={() => handleFollowClick()}>
+            {follow ? <PersonRemoveIcon/> : <PersonAddIcon/>}
           </IconButton>
         }
         className='postHeader'

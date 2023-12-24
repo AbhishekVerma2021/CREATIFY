@@ -17,6 +17,7 @@ import Avatar from '@mui/material/Avatar';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HomeIcon from '@mui/icons-material/Home';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import './Sidebar.css';
 import { red } from '@mui/material/colors';
@@ -59,6 +60,10 @@ const handleCreatePost = () => {
   navigate('/createPost');
 }
 
+const handleFavourites = () => {
+  navigate('/favourites');
+}
+
 const handleLogout = () => {
   navigate('/login');
   localStorage.clear();
@@ -97,6 +102,14 @@ const handleLogout = () => {
               <AccountCircleIcon />
             </ListItemIcon>
             <ListItemText primary={'Profile'} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem key={'Favourites'} disablePadding onClick={() => handleFavourites()}>
+          <ListItemButton>
+            <ListItemIcon>
+              <FavoriteIcon />
+            </ListItemIcon>
+            <ListItemText primary={'Favourites'} />
           </ListItemButton>
         </ListItem>
         <ListItem key={'Create new post'} disablePadding onClick={() => handleCreatePost()}>

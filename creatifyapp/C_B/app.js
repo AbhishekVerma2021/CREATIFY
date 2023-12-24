@@ -85,14 +85,14 @@ app.post("/api/login", async (req, res) => {
 
 app.get('/api/validateToken', authenticate, async (req, res) => {
   // console.log('ValidToken', req.user,"____________")
-  const { username, email, _id, followers, followings } = req.user;
+  const { username, email, _id, followers, following } = req.user;
   console.log('ValidToken', req.user, "____________", Object.values(req.user));
   const user = {
     username,
     email,
     _id,
     followers,
-    followings,
+    following,
   }
   res.status(200).send(user);
 
@@ -174,7 +174,6 @@ app.post("/api/comment", authenticate, async (req, res) => {
           username: user.username,
         };
         inpost.comments.push(newComment);
-        // console.log(inpost.comments);
 
         await inpost.save();
         res.send({ comments: inpost.comments, postId });
@@ -194,7 +193,7 @@ app.get('/api/fetchComments', async (req, res) => {
       res.send("Post Not Found");
     }
     else {
-      res.send({comments: inpost.comments, postId});
+      res.send({ comments: inpost.comments, postId });
     }
   } catch (er) {
     res.send(er);
@@ -206,7 +205,7 @@ app.post("/api/like", authenticate, async (req, res) => {
     const { user } = req;
     const { like, postId } = req.body;
     if (like === undefined || postId === undefined) {
-      res.send()
+      res.send('Post Id or Like must be specified')
     }
     const feedPost = await Post.findById(postId);
     console.log(like);
@@ -238,6 +237,74 @@ app.post("/api/like", authenticate, async (req, res) => {
     res.send(er);
   }
 });
+
+
+app.post('/api/favourites', async (req, res) => {
+  const { post_id, post_uId } = req.body;
+
+})
+
+app.post('/api/follow', authenticate, async (req, res) => {
+  try {
+    // console.log(req.body)
+    const { user } = req;
+    const { followedAcountId } = req.body;
+    const { _id } = user;
+
+    console.log(followedAcountId)
+    if (followedAcountId === undefined)
+      res.send('Mention followed account Id');
+
+    const followedAcount = await Users.findById(followedAcountId);
+    const userAccount = await Users.findById(_id);
+    if (!followedAcount)
+      res.send('Followed account does not exist');
+    else {
+      const followingArrayOfUser = userAccount.following.map((obj) => obj.uId);
+      if (followingArrayOfUser.includes(followedAcountId)) {
+        userAccount.following = userAccount.following.filter(
+          (item) => item.uId.toString() !== followedAcountId.toString()
+        );
+
+        await userAccount.save();
+
+        // Similarly, remove the user's ID from the followers array of followedAcount
+        followedAcount.followers = followedAcount.followers.filter(
+          (item) => item.uId.toString() !== _id.toString()
+        );
+
+        await followedAcount.save();
+
+        return res.send({ followers: userAccount.followers, following: userAccount.following })
+      }
+      else {
+        const followingOfUser = {
+          uId: followedAcountId,
+          username: followedAcount.username,
+          email: followedAcount.email,
+        }
+        userAccount.following.push(followingOfUser);
+        await userAccount.save();
+        const followedAccountsFollower = {
+          uId: _id,
+          username: userAccount.username,
+          email: userAccount.email,
+        }
+        followedAcount.followers.push(followedAccountsFollower);
+        await followedAcount.save();
+        res.send({ followers: userAccount.followers, following: userAccount.following })
+      }
+
+    }
+
+  }
+  catch (er) {
+    console.log(er);
+    res.send(er);
+  }
+})
+
+
 
 app.listen(port, () => {
   console.log("Server is running");

@@ -1,0 +1,22 @@
+.masterUserListContainer {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.userListCont {
+  width: 90%;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.userListLeftSideView {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.userListHeader {
+  font-weight: 800;
+  font-size: 30px;
+}

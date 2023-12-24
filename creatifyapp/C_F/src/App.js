@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Profile from './views/Profile';
 import Sidebar from './views/Sidebar';
 import CreatePost from './views/CreatePost';
+import Favourites from './views/Favourites';
 function App() {
   return (
     <div>
@@ -31,6 +32,12 @@ function App() {
             <Route path='/createPost' element={
               <Sidebar>
                 <ProtectedRoute componentPath={'/createPost'} Component={CreatePost} />
+              </Sidebar>
+            }
+            />
+            <Route path='/favourites' element={
+              <Sidebar>
+                <ProtectedRoute componentPath={'/favourites'} Component={Favourites} />
               </Sidebar>
             }
             />

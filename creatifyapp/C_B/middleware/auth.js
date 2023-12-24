@@ -6,8 +6,6 @@ const authenticate =async(req,res,next)=>{
       const {authorization=''} =req.headers;
       
       
-
-
       const token = req.headers.authorization.split('Bearer ')[1];
      
       if(!authorization && !token )
