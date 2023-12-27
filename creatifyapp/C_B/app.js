@@ -127,13 +127,13 @@ app.get("/api/profile", authenticate, async (req, res) => {
 
     let userId = _id != "undefined" ? _id : user._id;
 
+    let otherAccountFlag = user._id.toHexString() !== _id;
     const posts = await Post.find({ user: userId }).populate(
       "user",
       "username"
     );
-    const users = await Users.findOne({ _id: userId });
-
-    res.status(200).json({ posts, users });
+    const userDetails = await Users.findOne({ _id: userId }).select('-password -favourites');
+    res.status(200).json({ posts, userDetails, otherAccountFlag });
   } catch (error) {
     res.status(200).send(error);
   }

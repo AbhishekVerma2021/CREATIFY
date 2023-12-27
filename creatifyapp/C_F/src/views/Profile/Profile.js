@@ -14,18 +14,18 @@ const Profile = (props) => {
   const [toggleListView, setToggleListView] = useState(false);
   const [toggleFollowersList, setToggleFollowersList] = useState(false);
   const {
-    getActiveProfileDetails,
+    fetchProfileIdDetails,
   } = props;
 
   const {
     activeUserDetails,
     profilePostsData,
   } = props;
-  const { username, email, followers, following } = activeUserDetails;
-  console.log(activeUserDetails)
+  const { _id, username, email, followers, following } = activeUserDetails;
+  
   useEffect(() => {
     try {
-      getActiveProfileDetails();
+      fetchProfileIdDetails(_id);
     } catch (er) {
       toast.error('Could not fetch user details', { position: toast.POSITION.BOTTOM_LEFT });
     }

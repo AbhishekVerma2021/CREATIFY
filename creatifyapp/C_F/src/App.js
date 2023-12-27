@@ -10,6 +10,7 @@ import Profile from './views/Profile';
 import Sidebar from './views/Sidebar';
 import CreatePost from './views/CreatePost';
 import Favourites from './views/Favourites';
+import CommanProfileView from './views/CommanProfileView';
 function App() {
   return (
     <div>
@@ -38,6 +39,12 @@ function App() {
             <Route path='/favourites' element={
               <Sidebar>
                 <ProtectedRoute componentPath={'/favourites'} Component={Favourites} />
+              </Sidebar>
+            }
+            />
+            <Route path='/commanProfile' element={
+              <Sidebar>
+                <ProtectedRoute componentPath={'/commanProfile'} Component={CommanProfileView} />
               </Sidebar>
             }
             />

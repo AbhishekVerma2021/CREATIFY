@@ -133,13 +133,12 @@ export const fetchAllPostData = () => {
 };
 
 
-export const getActiveProfileDetails = () => {
+export const fetchProfileIdDetails = (profileId) => {
   return (dispatch, getState) => {
-    const { activeUserDetails, ussToken } = getState();
-    const { _id } = activeUserDetails;
-
+    const { ussToken } = getState();
+    
     dispatch({ type: FETCH_PROFILE_DETAILS_PENDING });
-    axios.get(`http://localhost:8000/api/profile?_id=${_id}`,
+    axios.get(`http://localhost:8000/api/profile?_id=${profileId}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -284,14 +283,14 @@ export const createPost = (postData) => {
 };
 
 
-export const followAccount = (postUserId) => {
-  console.log(postUserId);
+export const followAccount = (accountId) => {
+  console.log(accountId);
   return (dispatch, getState) => {
     const { ussToken } = getState();
     console.log(ussToken);
     dispatch({ type: FOLLOW_ACCOUNT_PENDING });
     axios.post('http://localhost:8000/api/follow', {
-      followedAcountId: postUserId,
+      followedAcountId: accountId,
     },
     {
       headers: {

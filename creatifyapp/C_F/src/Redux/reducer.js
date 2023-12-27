@@ -62,6 +62,15 @@ const initialState = {
     _id: '',
     followers: [],
     following: [],
+    favourites: [],
+  },
+  selectedUserProfileDetails: {
+    fetchedProfileUsername: '',
+    fetchedProfileEmail: '',
+    fetchedProfileId: '',
+    fetchedProfilePosts: [],
+    fetchedProfileFollowers: [],
+    fetchedProfileFollowing: [],
   },
   userRegistrationSuccessful: undefined,
   postsComments: {},
@@ -86,7 +95,7 @@ const reducer = (state = initialState, action) => {
         postFeedData: posts,
         errorForNoData: false,
         isLoading: false,
-        postsLikes: {...state.postsLikes, ...likesForPost}
+        postsLikes: { ...state.postsLikes, ...likesForPost }
       }
     }
     case FETCH_ALL_POSTS_REJECTED: {
@@ -138,7 +147,7 @@ const reducer = (state = initialState, action) => {
     }
     case LOGIN_USER_FULFILLED: {
       const { data: { token, user: { username, email, _id, followers, following, } } } = action.payload;
-      console.log(following,action.payload)
+      console.log(following, action.payload)
       toast.success(`Welcome ${username}`, {
         position: toast.POSITION.BOTTOM_LEFT
       });
@@ -166,10 +175,10 @@ const reducer = (state = initialState, action) => {
     }
     case LOGIN_USER_REJECTED: {
       const { response: { data } } = action.payload;
-      toast.error(data,{
+      toast.error(data, {
         position: toast.POSITION.BOTTOM_LEFT
       })
-      return{
+      return {
         isLoading: false,
       }
     }
@@ -217,14 +226,39 @@ const reducer = (state = initialState, action) => {
       }
     }
     case FETCH_PROFILE_DETAILS_FULFILLED: {
-      const { posts } = action.payload;
-      console.log(posts)
-      const likesForPost = {};
-      posts.forEach((post) => likesForPost[post._id] = post.likes);
-      return {
-        ...state,
-        profilePostsData: posts,
-        postsLikes: {...state.postsLikes, ...likesForPost}
+      const { posts, otherAccountFlag } = action.payload;
+
+      if (!otherAccountFlag) {
+        const likesForPost = {};
+        posts.forEach((post) => likesForPost[post._id] = post.likes);
+        return {
+          ...state,
+          profilePostsData: posts,
+          postsLikes: { ...state.postsLikes, ...likesForPost }
+        }
+      }
+      else {
+        const { userDetails } = action.payload;
+        const {
+          followers,
+          following,
+          username,
+          _id,
+          email,
+        } = userDetails;
+        console.log(userDetails)
+        return {
+          ...state,
+          selectedUserProfileDetails: {
+            ...state.selectedUserProfileDetails,
+            fetchedProfileFollowers: followers,
+            fetchedProfileFollowing: following,
+            fetchedProfileUsername: username,
+            fetchedProfileId: _id,
+            fetchedProfileEmail: email,
+            fetchedProfilePosts: posts,
+          }
+        }
       }
     }
     case FETCH_PROFILE_DETAILS_REJECTED: {
@@ -248,7 +282,7 @@ const reducer = (state = initialState, action) => {
       postAndItsComments[postId] = comments
       return {
         ...state,
-        postsComments: {...state.postsComments, ...postAndItsComments}
+        postsComments: { ...state.postsComments, ...postAndItsComments }
       }
     }
     case USER_COMMENT_REJECTED: {
@@ -321,9 +355,9 @@ const reducer = (state = initialState, action) => {
     }
     case UPLOAD_IMAGE_REJECTED: {
       const {
-       data: {
-        message
-       } 
+        data: {
+          message
+        }
       } = action.payload;
 
       toast.error(message, { position: toast.POSITION.BOTTOM_LEFT })
@@ -381,7 +415,7 @@ const reducer = (state = initialState, action) => {
     }
     case FOLLOW_ACCOUNT_REJECTED: {
       console.log(action.payload)
-      toast.error('Some Error occured', { position: toast.POSITION.BOTTOM_LEFT});
+      toast.error('Some Error occured', { position: toast.POSITION.BOTTOM_LEFT });
       return {
         ...state,
       }
