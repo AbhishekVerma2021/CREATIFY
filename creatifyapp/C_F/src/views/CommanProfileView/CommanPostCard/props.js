@@ -16,4 +16,5 @@ export const mapStateToProps = (state) => ({
   postsComments: state.postsComments,
   activeUserDetails: state.activeUserDetails,
   postsLikes: state.postsLikes,
+  selectedUserProfileDetails: state.selectedUserProfileDetails,
 });

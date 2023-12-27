@@ -1,9 +1,9 @@
 import {
-  getActiveProfileDetails,
+  fetchProfileIdDetails,
 } from '../../Redux/action';
 
 export const mapDispatchToProps = (dispatch) => ({
-  getActiveProfileDetails: () => dispatch(getActiveProfileDetails()),
+  fetchProfileIdDetails: (profileId) => dispatch(fetchProfileIdDetails(profileId)),
 });
 
 export const mapStateToProps = (state) => ({

@@ -1,12 +1,12 @@
 import {
-  fetchProfileIdDetails,
+  followAccount,
 } from '../../Redux/action';
 
 export const mapDispatchToProps = (dispatch) => ({
-  fetchProfileIdDetails: (profileId) => dispatch(fetchProfileIdDetails(profileId)),
+  followAccount: (accountId) => dispatch(followAccount(accountId)),
 });
 
 export const mapStateToProps = (state) => ({
   activeUserDetails: state.activeUserDetails,
-  profilePostsData: state.profilePostsData,
+  selectedUserProfileDetails: state.selectedUserProfileDetails,
 });
