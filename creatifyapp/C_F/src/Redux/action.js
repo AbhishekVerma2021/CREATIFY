@@ -49,17 +49,17 @@ import {
 } from './actionTypes';
 
 import axios from 'axios';
-
+const Service_URL = 'http://localhost:8000/api';
 export const submitUser = (username, email, password) => {
   const data = {
     username: username,
     email: email,
     password: password,
   };
-
+  
   return {
     type: SUBMIT_USER,
-    payload: axios.post('http://localhost:8000/api/register', data)
+    payload: axios.post(`${Service_URL}/user/register`, data)
       .then((res) => {
         return res.data; // Make sure to return the relevant data from the Promise
       })
@@ -79,7 +79,7 @@ export const loginUser = (email, password, navigate) => {
   return (dispatch) => {
     dispatch({ type: LOGIN_USER });
 
-    axios.post('http://localhost:8000/api/login', data)
+    axios.post(`${Service_URL}/user/login`, data)
       .then((res) => {
         dispatch({ type: LOGIN_USER_FULFILLED, payload: res });
         navigate('/');
@@ -101,7 +101,7 @@ export const validateLoginStatus = (navigate, componentPath) => {
   }
   else {
     return (dispatch) => {
-      axios.get('http://localhost:8000/api/validateToken', {
+      axios.get(`${Service_URL}/user/validateToken`, {
         headers: {
           authorization: `Bearer ${localStorage.getItem('TOKEN')}`
         }
@@ -124,7 +124,7 @@ export const fetchAllPostData = () => {
     dispatch({ type: FETCH_ALL_POSTS_PENDING });
 
 
-    axios.post('http://localhost:8000/api/posts',
+    axios.post(`${Service_URL}/post/posts`,
       { user: activeUserDetails },
       {
         headers: {
@@ -147,7 +147,7 @@ export const fetchProfileIdDetails = (profileId) => {
     const { ussToken } = getState();
     
     dispatch({ type: FETCH_PROFILE_DETAILS_PENDING });
-    axios.get(`http://localhost:8000/api/profile?_id=${profileId}`,
+    axios.get(`${Service_URL}/user/profile?_id=${profileId}`,// update the url
       {
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ export const handleCommentOnPost = (commentString, postId) => {
     const { ussToken } = getState();
     dispatch({
       type: USER_COMMENT,
-      payload: axios.post('http://localhost:8000/api/comment', {
+      payload: axios.post(`${Service_URL}/post/comment`, {
         comment: commentString,
         postId,
       },
@@ -189,7 +189,7 @@ export const fetchPostsComments = (postId) => {
     if (!Object.keys(postsComments).includes(postId)) {
       dispatch({
         type: FETCH_COMMENTS_FOR_POST,
-        payload: axios.get(`http://localhost:8000/api/fetchComments?postId=${postId}`,
+        payload: axios.get(`${Service_URL}/post/fetchComments?postId=${postId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -211,7 +211,7 @@ export const handleLikesAndDislikes = (postId, like) => {
     const { _id } = activeUserDetails;
     dispatch({
       type: HANDLE_LIKES,
-      payload: axios.post(`http://localhost:8000/api/like`,
+      payload: axios.post(`${Service_URL}/post/like`,
         {
           postId,
           like: !like,
@@ -267,7 +267,7 @@ export const createPost = (postData) => {
       const { ussToken } = getState();
       if (imageURL) {
         dispatch({ type: CREATE_POST_PENDING });
-        axios.post('http://localhost:8000/api/new-post', {
+        axios.post(`${Service_URL}/post/new-post`, {
           url: imageURL,
           desc: description,
           caption,
@@ -297,7 +297,7 @@ export const followAccount = (accountId) => {
     const { ussToken } = getState();
     console.log(ussToken);
     dispatch({ type: FOLLOW_ACCOUNT_PENDING });
-    axios.post('http://localhost:8000/api/follow', {
+    axios.post(`${Service_URL}/user/follow`, {
       followedAcountId: accountId,
     },
     {
@@ -319,7 +319,7 @@ export const setFavouritePost = (postId, postUid) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: FAVORITE_POST_PENDING });
-    axios.post('http://localhost:8000/api/favorites', {
+    axios.post(`${Service_URL}/post/toggleFavorite`, {
       post_id: postId,
       post_uId: postUid,
     },
@@ -347,7 +347,7 @@ export const fetchAllUsers = () => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: FETCH_ALL_USERS_PENDING });
-    axios.get('http://localhost:8000/api/getUsers',{
+    axios.get(`${Service_URL}/user/getUsers`,{
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${ussToken}`,
