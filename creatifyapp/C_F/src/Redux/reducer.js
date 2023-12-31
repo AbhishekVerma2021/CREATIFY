@@ -48,6 +48,10 @@ import {
   FAVORITE_POST_FULFILLED,
   FAVORITE_POST_REJECTED,
   SET_PAGE_HEADER,
+  FETCH_ALL_USERS,
+  FETCH_ALL_USERS_PENDING,
+  FETCH_ALL_USERS_FULFILLED,
+  FETCH_ALL_USERS_REJECTED,
 } from './actionTypes';
 
 import { toast } from 'react-toastify';
@@ -83,6 +87,7 @@ const initialState = {
   favoritePostIds: [],
   imageURL: '',
   pageHeaderText: '',
+  allUsersList: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -455,7 +460,6 @@ const reducer = (state = initialState, action) => {
     }
     case FAVORITE_POST_FULFILLED: {
       const { favouritePosts, favouritePostIds, message } = action.payload;
-      // console.log(favouritePostIds, favouritePosts)
       toast.success(message, {
         position: toast.POSITION.BOTTOM_LEFT,
       })
@@ -480,6 +484,29 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         pageHeaderText: headerText,
+      }
+    }
+
+    case FETCH_ALL_USERS: {
+
+    }
+    case FETCH_ALL_USERS_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case FETCH_ALL_USERS_FULFILLED: {
+      const { users } = action.payload;
+      console.log(users);
+      return {
+        ...state,
+        allUsersList: users,
+      }
+    }
+    case FETCH_ALL_USERS_REJECTED: {
+      console.log(action.payload);
+      return {
+        ...state,
       }
     }
     default: return state;

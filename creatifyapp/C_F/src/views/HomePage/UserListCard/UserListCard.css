@@ -1,0 +1,4 @@
+.userListUsernameContainer {
+  display: flex;
+  justify-content: space-between;
+}

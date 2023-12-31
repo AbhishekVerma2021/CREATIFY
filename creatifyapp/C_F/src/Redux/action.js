@@ -42,6 +42,10 @@ import {
   FAVORITE_POST_FULFILLED,
   FAVORITE_POST_REJECTED,
   SET_PAGE_HEADER,
+  FETCH_ALL_USERS,
+  FETCH_ALL_USERS_PENDING,
+  FETCH_ALL_USERS_FULFILLED,
+  FETCH_ALL_USERS_REJECTED,
 } from './actionTypes';
 
 import axios from 'axios';
@@ -287,7 +291,6 @@ export const createPost = (postData) => {
   };
 };
 
-
 export const followAccount = (accountId) => {
   console.log(accountId);
   return (dispatch, getState) => {
@@ -338,3 +341,19 @@ export const setFavouritePost = (postId, postUid) => {
 export const setPageHeader = (headerText) => {
   return (dispatch) => dispatch({ type: SET_PAGE_HEADER, payload: { headerText } })
 }
+
+export const fetchAllUsers = () => {
+  console.log('GET ALL USERS')
+  return (dispatch, getState) => {
+    const { ussToken } = getState();
+    dispatch({ type: FETCH_ALL_USERS_PENDING });
+    axios.get('http://localhost:8000/api/getUsers',{
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${ussToken}`,
+      },
+    })
+    .then(res => dispatch({ type: FETCH_ALL_USERS_FULFILLED, payload: res.data }))
+    .catch(err => dispatch({ type: FETCH_ALL_USERS_REJECTED, payload: err }))
+  }
+} 

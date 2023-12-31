@@ -1,28 +1,22 @@
-.boxContainerForFeedSection  {
+.masterHomePageContainer {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.masterPostsCardContainer {
+    width: 65%;
     display: flex;
     align-items: center;
     flex-direction: column;
-    justify-content: center;
 }
 
-.avatarForProfile {
-    font-size: 50px;
-    font-weight: 50;
-}
-
-.avatarConatiner {
+.masterUserListContainer {
+    width: 25% !important;
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-top: 5vh;
     display: flex;
+    /* border: 2px solid red; */
     justify-content: center;
-    align-items: center;
-    height: 200px;
-}
-
-.userEmailContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 30px;
-    flex-wrap: wrap;
-    font-size: 13px;
-    /* color: ; */
 }
