@@ -37,6 +37,11 @@ import {
   FOLLOW_ACCOUNT_PENDING,
   FOLLOW_ACCOUNT_FULFILLED,
   FOLLOW_ACCOUNT_REJECTED,
+  FAVORITE_POST,
+  FAVORITE_POST_PENDING,
+  FAVORITE_POST_FULFILLED,
+  FAVORITE_POST_REJECTED,
+  SET_PAGE_HEADER,
 } from './actionTypes';
 
 import axios from 'axios';
@@ -307,3 +312,29 @@ export const followAccount = (accountId) => {
   }
 }
 
+export const setFavouritePost = (postId, postUid) => {
+  return (dispatch, getState) => {
+    const { ussToken } = getState();
+    dispatch({ type: FAVORITE_POST_PENDING });
+    axios.post('http://localhost:8000/api/favorites', {
+      post_id: postId,
+      post_uId: postUid,
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${ussToken}`,
+      },
+    })
+    .then((res) => {
+      dispatch({ type: FAVORITE_POST_FULFILLED, payload: res.data});
+    })
+    .catch((err) => {
+      dispatch({ type: FAVORITE_POST_REJECTED, payload: err })
+    })
+  }
+}
+
+export const setPageHeader = (headerText) => {
+  return (dispatch) => dispatch({ type: SET_PAGE_HEADER, payload: { headerText } })
+}

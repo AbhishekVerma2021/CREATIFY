@@ -85,16 +85,23 @@ app.post("/api/login", async (req, res) => {
 
 app.get('/api/validateToken', authenticate, async (req, res) => {
   // console.log('ValidToken', req.user,"____________")
-  const { username, email, _id, followers, following } = req.user;
-  console.log('ValidToken', req.user, "____________", Object.values(req.user));
+  const { username, email, _id, followers, following, favorites } = req.user;
+  const favouritePostIdArray = favorites.map((obj) => obj.postId);
+  const favouritePostArray = await Promise.all(
+    favouritePostIdArray.map(async (postId) => {
+      const post = await Post.findById(postId).populate("user", "_id username email");
+      return post; 
+    })
+  );
   const user = {
     username,
     email,
     _id,
     followers,
     following,
+    favorites,
   }
-  res.status(200).send(user);
+  res.status(200).send({user, favoritePosts: favouritePostArray});
 
 })
 
@@ -120,6 +127,7 @@ app.post("/api/new-post", authenticate, async (req, res) => {
     res.status(500).send("Error" + error);
   }
 });
+
 app.get("/api/profile", authenticate, async (req, res) => {
   try {
     const { user } = req;
@@ -132,18 +140,13 @@ app.get("/api/profile", authenticate, async (req, res) => {
       "user",
       "username"
     );
-    const userDetails = await Users.findOne({ _id: userId }).select('-password -favourites');
+    const userDetails = await Users.findOne({ _id: userId }).select('-password -favorites');
     res.status(200).json({ posts, userDetails, otherAccountFlag });
   } catch (error) {
     res.status(200).send(error);
   }
 });
-// app.get('/api/userProfile', (req,res) => {
-//     try {
-//         const { userId } = req.query;
-//         const posts = await Post.find()
-//     }
-// })
+
 app.post("/api/posts", authenticate, async (req, res) => {
   try {
     const { user } = req.body;
@@ -154,6 +157,7 @@ app.post("/api/posts", authenticate, async (req, res) => {
     res.status(200).send(error);
   }
 });
+
 app.post("/api/comment", authenticate, async (req, res) => {
   try {
     const { user } = req;
@@ -238,10 +242,47 @@ app.post("/api/like", authenticate, async (req, res) => {
   }
 });
 
-
-app.post('/api/favourites', async (req, res) => {
+app.post('/api/favorites', authenticate,async (req, res) => {
   const { post_id, post_uId } = req.body;
+  const { user } = req;
+  try {
+    const {
+      _id,
+    } = user;
+    const userAccount  = await Users.findById(_id);
+    const postOwnerAccount = await Users.findById(post_uId);
+    const favouritePostIdArray = userAccount.favorites.map((obj) => obj.postId);
+    let messageFlag = true;
+    if(favouritePostIdArray.includes(post_id))
+    {
+      messageFlag = false;
+      userAccount.favorites = userAccount.favorites.filter((item) => item.postId.toString() !== post_id);
+    }
+    else {
+      const favouritePost = {
+        uId: post_uId,
+        postId: post_id,
+        username: postOwnerAccount.username,
+        email: postOwnerAccount.email,
+      };
+  
+      userAccount.favorites.push(favouritePost);
+    }
+    await userAccount.save();
+    
+    const favouritePostArray = await Promise.all(
+      favouritePostIdArray.map(async (postId) => {
+        const post = await Post.findById(postId).populate("user", "_id username email");
+        return post; 
+      })
+    );
 
+    console.log(favouritePostArray)
+    res.send({ favouritePosts: favouritePostArray, favouritePostIds: userAccount.favorites, message: messageFlag ? 'Added to your favorits!!' : 'Removed from favorits!!' })
+  }
+  catch (err) {
+    res.send(err);
+  }
 })
 
 app.post('/api/follow', authenticate, async (req, res) => {

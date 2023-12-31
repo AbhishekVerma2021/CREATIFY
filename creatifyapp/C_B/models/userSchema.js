@@ -11,10 +11,11 @@ const following = new mongoose.Schema({
     username: String,
     email: String,
 });
-const favourites = new mongoose.Schema({
+const favorites = new mongoose.Schema({
     uId: String,
     username: String,
     email: String,
+    postId: String,
 });
 const userSchema=new mongoose.Schema({
     username:{
@@ -35,7 +36,7 @@ const userSchema=new mongoose.Schema({
     },
     followers: [followers],
     following: [following],
-    favourites: [favourites],
+    favorites: [favorites],
     date: {
         type: Date,
         default: Date.now,
