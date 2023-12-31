@@ -36,9 +36,9 @@ function App() {
               </Sidebar>
             }
             />
-            <Route path='/favourites' element={
+            <Route path='/favorites' element={
               <Sidebar>
-                <ProtectedRoute componentPath={'/favourites'} Component={Favourites} />
+                <ProtectedRoute componentPath={'/favorites'} Component={Favourites} />
               </Sidebar>
             }
             />

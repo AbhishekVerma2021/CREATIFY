@@ -33,9 +33,11 @@ const Sidebar = (props) => {
   
   const navigate = useNavigate();
   const {
-    children
+    children,
+    setPageHeader,
   } = props;
   const {
+    pageHeaderText,
     activeUserDetails,
     ussToken,
   } = props; // states
@@ -50,18 +52,22 @@ const Sidebar = (props) => {
 
 const handleHomePage = () => {
   navigate('/');
+  setPageHeader('HOME')
 }
 
 const handleProfile = () => {
   navigate('/profile');
+  setPageHeader('PROFILE')
 }
 
 const handleCreatePost = () => {
   navigate('/createPost');
+  setPageHeader('CREATE A NEW POST')
 }
 
 const handleFavourites = () => {
-  navigate('/favourites');
+  navigate('/favorites');
+  setPageHeader('YOUR FAVORITES')
 }
 
 const handleLogout = () => {
@@ -152,7 +158,7 @@ const handleLogout = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Responsive drawer
+            {pageHeaderText}
           </Typography>
         </Toolbar>
       </AppBar>

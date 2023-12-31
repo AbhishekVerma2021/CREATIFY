@@ -43,6 +43,11 @@ import {
   FOLLOW_ACCOUNT_PENDING,
   FOLLOW_ACCOUNT_FULFILLED,
   FOLLOW_ACCOUNT_REJECTED,
+  FAVORITE_POST,
+  FAVORITE_POST_PENDING,
+  FAVORITE_POST_FULFILLED,
+  FAVORITE_POST_REJECTED,
+  SET_PAGE_HEADER,
 } from './actionTypes';
 
 import { toast } from 'react-toastify';
@@ -62,7 +67,7 @@ const initialState = {
     _id: '',
     followers: [],
     following: [],
-    favourites: [],
+    favorites: [],
   },
   selectedUserProfileDetails: {
     fetchedProfileUsername: '',
@@ -75,7 +80,9 @@ const initialState = {
   userRegistrationSuccessful: undefined,
   postsComments: {},
   postsLikes: {},
+  favoritePostIds: [],
   imageURL: '',
+  pageHeaderText: '',
 };
 
 const reducer = (state = initialState, action) => {
@@ -146,7 +153,7 @@ const reducer = (state = initialState, action) => {
       }
     }
     case LOGIN_USER_FULFILLED: {
-      const { data: { token, user: { username, email, _id, followers, following, } } } = action.payload;
+      const { data: { token, user: { username, email, _id, followers, following, favorites } } } = action.payload;
       console.log(following, action.payload)
       toast.success(`Welcome ${username}`, {
         position: toast.POSITION.BOTTOM_LEFT
@@ -158,6 +165,7 @@ const reducer = (state = initialState, action) => {
         _id,
         following,
         followers,
+        favorites: favorites,
       }
       console.log(user)
       return {
@@ -189,12 +197,22 @@ const reducer = (state = initialState, action) => {
       }
     }
     case USER_LOGIN_STATUS_FULFILLED: {
-      const userData = action.payload; // {username: '', email: '', _id: ''}
+      const { user, favoritePosts } = action.payload;
       const token = localStorage.getItem('TOKEN')
+      const { favorites, username, email, _id, followers, following } = user;
+      
       return {
         ...state,
         isUserLoggedIn: true,
-        activeUserDetails: userData,
+        activeUserDetails: {
+          username,
+          email,
+          _id,
+          followers,
+          following,
+          favorites: favoritePosts,
+        },
+        favoritePostIds: favorites,
         ussToken: token,
       }
     }
@@ -214,6 +232,7 @@ const reducer = (state = initialState, action) => {
         isUserLoggedIn: false,
       }
     }
+    
     case FETCH_PROFILE_DETAILS: {
       return {
         ...state,
@@ -266,6 +285,7 @@ const reducer = (state = initialState, action) => {
         ...state,
       }
     }
+    
     case USER_COMMENT: {
       return {
         ...state,
@@ -290,6 +310,7 @@ const reducer = (state = initialState, action) => {
         ...state,
       }
     }
+    
     case FETCH_COMMENTS_FOR_POST: {
       return {
         ...state,
@@ -314,6 +335,7 @@ const reducer = (state = initialState, action) => {
         ...state,
       }
     }
+    
     case HANDLE_LIKES: {
       return {
         ...state,
@@ -418,6 +440,46 @@ const reducer = (state = initialState, action) => {
       toast.error('Some Error occured', { position: toast.POSITION.BOTTOM_LEFT });
       return {
         ...state,
+      }
+    }
+
+    case FAVORITE_POST: {
+      return {
+        ...state,
+      }
+    }
+    case FAVORITE_POST_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case FAVORITE_POST_FULFILLED: {
+      const { favouritePosts, favouritePostIds, message } = action.payload;
+      // console.log(favouritePostIds, favouritePosts)
+      toast.success(message, {
+        position: toast.POSITION.BOTTOM_LEFT,
+      })
+      return {
+        ...state,
+        activeUserDetails: {
+          ...state.activeUserDetails,
+          favorites: favouritePosts,
+        },
+        favoritePostIds: favouritePostIds,
+      }
+    }
+    case FAVORITE_POST_REJECTED: {
+      console.log(action.payload);
+      return {
+        ...state,
+      }
+    }
+
+    case SET_PAGE_HEADER: {
+      const { headerText } = action.payload;
+      return {
+        ...state,
+        pageHeaderText: headerText,
       }
     }
     default: return state;

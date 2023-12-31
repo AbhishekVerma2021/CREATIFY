@@ -16,6 +16,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CommentDialog from '../../../components/CommentDialog';
+import StarIcon from '@mui/icons-material/Star';
 // import followIcon from '../../../images/follow.svg';
 // import followedIcon from '../../../images/following.svg';
 // import avatar from '../../../images/avatar.svg'
@@ -42,6 +43,7 @@ const Post = (props) => {
   const [like, setLike] = useState(false);
   const navigate = useNavigate();
   const [follow, setFollow] = useState(false);
+  const [favoriteFlag, setFavoriteFlag] = useState(false);
   const {
     post,
     fetchPostsComments,
@@ -50,6 +52,8 @@ const Post = (props) => {
     postsLikes,
     followAccount,
     fetchProfileIdDetails,
+    setFavouritePost,
+    favoritePostIds,
   } = props;
 
   const {
@@ -65,7 +69,6 @@ const Post = (props) => {
   const inputDate = new Date(date);
 
   
-
   const options = {
     year: 'numeric',
     month: 'long',
@@ -87,6 +90,10 @@ const Post = (props) => {
     username = user.username;
     postUserId = user._id;
   }
+  useEffect(() => {
+    const favoriteIdsArray = favoritePostIds.map(post => post.postId);
+    setFavoriteFlag(favoriteIdsArray.includes(postId));
+  }, [favoritePostIds])
 
   useEffect(() => {
     const { following } = activeUserDetails;
@@ -141,6 +148,16 @@ const Post = (props) => {
     }
   };
 
+  const handleFavouritePostClick = async () => {
+    try {
+      await setFavouritePost(postId, postUserId);
+      setFavoriteFlag(!favoriteFlag);
+    }
+    catch(er) {
+      alert('Something Went wrong!!!')
+    }
+  };
+
   return (
     <Card sx={{ minWidth: "35vw", margin: "40px 0" }}>
       <CardHeader
@@ -180,6 +197,9 @@ const Post = (props) => {
         </IconButton>
         <IconButton aria-label="share">
           <ShareIcon />
+        </IconButton>
+        <IconButton aria-label="Favorite" onClick={() => handleFavouritePostClick()}>
+          <StarIcon style={{ color: favoriteFlag ? '#FFD700' : 'inherit', }} />
         </IconButton>
         <ExpandMore
           expand={expanded}
