@@ -159,7 +159,7 @@ const Post = (props) => {
   };
 
   return (
-    <Card sx={{ minWidth: "35vw", margin: "40px 0" }}>
+    <Card sx={{ maxWidth: "35vw", margin: "40px 0" }}>
       <CardHeader
         onClick={() => handleProfileViewClick()}
         avatar={

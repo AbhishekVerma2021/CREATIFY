@@ -345,6 +345,15 @@ app.post('/api/follow', authenticate, async (req, res) => {
   }
 })
 
+app.get('/api/getUsers', authenticate, async (req, res) => {
+  try {
+    const allUsers = await Users.find({}, 'username email _id');
+    res.send({users: allUsers});
+  }
+  catch (er) {
+    res.send(er);
+  }
+})
 
 
 app.listen(port, () => {
