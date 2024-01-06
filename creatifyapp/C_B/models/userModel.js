@@ -42,6 +42,5 @@ const userSchema=new mongoose.Schema({
         default: Date.now,
     },
 })
-const Users= new mongoose.model("User",userSchema);
-
+const Users= new mongoose.model("USER",userSchema);
 module.exports=Users;

@@ -46,54 +46,20 @@ import {
   FETCH_ALL_USERS_PENDING,
   FETCH_ALL_USERS_FULFILLED,
   FETCH_ALL_USERS_REJECTED,
-  CREATE_CHAT,
-  CREATE_CHAT_PENDING,
-  CREATE_CHAT_FULFILLED,
-  CREATE_CHAT_REJECTED,
-  FETCH_ALL_CHATS,
-  FETCH_ALL_CHATS_PENDING,
-  FETCH_ALL_CHATS_FULFILLED,
-  FETCH_ALL_CHATS_REJECTED,
-  CREATE_CHAT_GROUP,
-  CREATE_CHAT_GROUP_PENDING,
-  CREATE_CHAT_GROUP_FULFILLED,
-  CREATE_CHAT_GROUP_REJECTED,
-  RENAME_GROUP,
-  RENAME_GROUP_PENDING,
-  RENAME_GROUP_FULFILLED,
-  RENAME_GROUP_REJECTED,
-  ADD_TO_GROUP,
-  ADD_TO_GROUP_PENDING,
-  ADD_TO_GROUP_FULFILLED,
-  ADD_TO_GROUP_REJECTED,
-  REMOVE_FROM_GROUP,
-  REMOVE_FROM_GROUP_PENDING,
-  REMOVE_FROM_GROUP_FULFILLED,
-  REMOVE_FROM_GROUP_REJECTED,
-  SEND_MESSAGE,
-  SEND_MESSAGE_PENDING,
-  SEND_MESSAGE_FULFILLED,
-  SEND_MESSAGE_REJECTED,
-  FETCH_CHAT_MESSAGE,
-  FETCH_CHAT_MESSAGE_PENDING,
-  FETCH_CHAT_MESSAGE_FULFILLED,
-  FETCH_CHAT_MESSAGE_REJECTED,
-  SET_SOCKET_IN_STORE,
-  SET_NOTIFICATION_ARRAY,
 } from './actionTypes';
 
 import axios from 'axios';
-
+const Service_URL = 'http://localhost:8000/api';
 export const submitUser = (username, email, password) => {
   const data = {
     username: username,
     email: email,
     password: password,
   };
-
+  
   return {
     type: SUBMIT_USER,
-    payload: axios.post('http://localhost:8000/api/register', data)
+    payload: axios.post(`${Service_URL}/user/register`, data)
       .then((res) => {
         return res.data; // Make sure to return the relevant data from the Promise
       })
@@ -113,7 +79,7 @@ export const loginUser = (email, password, navigate) => {
   return (dispatch) => {
     dispatch({ type: LOGIN_USER });
 
-    axios.post('http://localhost:8000/api/login', data)
+    axios.post(`${Service_URL}/user/login`, data)
       .then((res) => {
         dispatch({ type: LOGIN_USER_FULFILLED, payload: res });
         navigate('/');
@@ -135,7 +101,7 @@ export const validateLoginStatus = (navigate, componentPath) => {
   }
   else {
     return (dispatch) => {
-      axios.get('http://localhost:8000/api/validateToken', {
+      axios.get(`${Service_URL}/user/validateToken`, {
         headers: {
           authorization: `Bearer ${localStorage.getItem('TOKEN')}`
         }
@@ -158,7 +124,7 @@ export const fetchAllPostData = () => {
     dispatch({ type: FETCH_ALL_POSTS_PENDING });
 
 
-    axios.post('http://localhost:8000/api/posts',
+    axios.post(`${Service_URL}/post/posts`,
       { user: activeUserDetails },
       {
         headers: {
@@ -175,12 +141,13 @@ export const fetchAllPostData = () => {
   };
 };
 
+
 export const fetchProfileIdDetails = (profileId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
-
+    
     dispatch({ type: FETCH_PROFILE_DETAILS_PENDING });
-    axios.get(`http://localhost:8000/api/profile?_id=${profileId}`,
+    axios.get(`${Service_URL}/user/profile?_id=${profileId}`,// update the url
       {
         headers: {
           'Content-Type': 'application/json',
@@ -199,7 +166,7 @@ export const handleCommentOnPost = (commentString, postId) => {
     const { ussToken } = getState();
     dispatch({
       type: USER_COMMENT,
-      payload: axios.post('http://localhost:8000/api/comment', {
+      payload: axios.post(`${Service_URL}/post/comment`, {
         comment: commentString,
         postId,
       },
@@ -222,7 +189,7 @@ export const fetchPostsComments = (postId) => {
     if (!Object.keys(postsComments).includes(postId)) {
       dispatch({
         type: FETCH_COMMENTS_FOR_POST,
-        payload: axios.get(`http://localhost:8000/api/fetchComments?postId=${postId}`,
+        payload: axios.get(`${Service_URL}/post/fetchComments?postId=${postId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -244,7 +211,7 @@ export const handleLikesAndDislikes = (postId, like) => {
     const { _id } = activeUserDetails;
     dispatch({
       type: HANDLE_LIKES,
-      payload: axios.post(`http://localhost:8000/api/like`,
+      payload: axios.post(`${Service_URL}/post/like`,
         {
           postId,
           like: !like,
@@ -300,7 +267,7 @@ export const createPost = (postData) => {
       const { ussToken } = getState();
       if (imageURL) {
         dispatch({ type: CREATE_POST_PENDING });
-        axios.post('http://localhost:8000/api/new-post', {
+        axios.post(`${Service_URL}/post/new-post`, {
           url: imageURL,
           desc: description,
           caption,
@@ -330,21 +297,21 @@ export const followAccount = (accountId) => {
     const { ussToken } = getState();
     console.log(ussToken);
     dispatch({ type: FOLLOW_ACCOUNT_PENDING });
-    axios.post('http://localhost:8000/api/follow', {
+    axios.post(`${Service_URL}/user/follow`, {
       followedAcountId: accountId,
     },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${ussToken}`,
-        },
-      }).then(res => {
-        console.log(res)
-        dispatch({ type: FOLLOW_ACCOUNT_FULFILLED, payload: res.data });
-      }).catch(er => {
-        console.log(er)
-        dispatch({ type: FOLLOW_ACCOUNT_REJECTED, payload: er.message })
-      })
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${ussToken}`,
+      },
+    }).then( res => {
+      console.log(res)
+      dispatch({ type: FOLLOW_ACCOUNT_FULFILLED, payload: res.data });
+    }).catch( er => {
+      console.log(er)
+      dispatch({ type: FOLLOW_ACCOUNT_REJECTED, payload: er.message })
+    })
   }
 }
 
@@ -352,22 +319,22 @@ export const setFavouritePost = (postId, postUid) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: FAVORITE_POST_PENDING });
-    axios.post('http://localhost:8000/api/favorites', {
+    axios.post(`${Service_URL}/post/toggleFavorite`, {
       post_id: postId,
       post_uId: postUid,
     },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${ussToken}`,
-        },
-      })
-      .then((res) => {
-        dispatch({ type: FAVORITE_POST_FULFILLED, payload: res.data });
-      })
-      .catch((err) => {
-        dispatch({ type: FAVORITE_POST_REJECTED, payload: err })
-      })
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${ussToken}`,
+      },
+    })
+    .then((res) => {
+      dispatch({ type: FAVORITE_POST_FULFILLED, payload: res.data});
+    })
+    .catch((err) => {
+      dispatch({ type: FAVORITE_POST_REJECTED, payload: err })
+    })
   }
 }
 
@@ -380,162 +347,13 @@ export const fetchAllUsers = () => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: FETCH_ALL_USERS_PENDING });
-    axios.get('http://localhost:8000/api/getUsers', {
+    axios.get(`${Service_URL}/user/getUsers`,{
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${ussToken}`,
       },
     })
-      .then(res => dispatch({ type: FETCH_ALL_USERS_FULFILLED, payload: res.data }))
-      .catch(err => dispatch({ type: FETCH_ALL_USERS_REJECTED, payload: err }))
+    .then(res => dispatch({ type: FETCH_ALL_USERS_FULFILLED, payload: res.data }))
+    .catch(err => dispatch({ type: FETCH_ALL_USERS_REJECTED, payload: err }))
   }
-}
-
-export const createNewChat = (userId) => {
-  return (dispatch, getState) => {
-    const { ussToken } = getState();
-    dispatch({ type: CREATE_CHAT_PENDING });
-    axios.post('http://localhost:8000/api/chat', {
-      userId,
-    },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${ussToken}`,
-        }
-      }).then(res => dispatch({ type: CREATE_CHAT_FULFILLED, payload: res.data }))
-      .catch(er => dispatch({ type: CREATE_CHAT_REJECTED, payload: er }))
-  };
-};
-
-export const fetchAllChats = (token) => {
-  return (dispatch, getState) => {
-    const { ussToken } = getState();
-    // console.log(ussToken)
-    dispatch({ type: FETCH_ALL_CHATS_PENDING });
-    axios.get('http://localhost:8000/api/getUserChats', {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${ussToken ? ussToken : token}`,
-      }
-    })
-      .then(res => dispatch({ type: FETCH_ALL_CHATS_FULFILLED, payload: res }))
-      .catch(er => dispatch({ type: FETCH_ALL_CHATS_REJECTED, payload: er }));
-  };
-}
-
-export const createChatGroup = (usersIdArray, groupName) => {
-  return (dispatch, getState) => {
-    const { ussToken } = getState();
-    dispatch({ type: CREATE_CHAT_GROUP_PENDING });
-    axios.post('http://localhost:8000/api/createGroup', {
-      users: usersIdArray,
-      group_name: groupName,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${ussToken}`,
-      }
-    })
-      .then(res => dispatch({ type: CREATE_CHAT_GROUP_FULFILLED, payload: res }))
-      .catch(er => dispatch({ type: CREATE_CHAT_GROUP_REJECTED, payload: er }));
-  };
-};
-
-export const editGroupName = (newGroupName, groupId) => {
-  return (dispatch, getState) => {
-    const { ussToken } = getState();
-    dispatch({ type: RENAME_GROUP_PENDING });
-    axios.post('http://localhost:8000/api/renameGroup', {
-      chatId: groupId,
-      updated_name: newGroupName,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${ussToken}`,
-      }
-    })
-      .then(res => dispatch({ type: RENAME_GROUP_FULFILLED, payload: res }))
-      .catch(err => dispatch({ type: RENAME_GROUP_REJECTED, payload: err }));
-  };
-};
-
-export const addNewMemberToGroup = (memberId, groupId) => {
-  return (dispatch, getState) => {
-    const { ussToken } = getState();
-    dispatch({ type: ADD_TO_GROUP_PENDING });
-    axios.post('http://localhost:8000/api/addToGroup', {
-      chatId: groupId,
-      userId: memberId,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${ussToken}`,
-      }
-    }).then(res => dispatch({ type: ADD_TO_GROUP_FULFILLED, payload: res }))
-      .catch(err => dispatch({ type: ADD_TO_GROUP_REJECTED, payload: err }));
-  };
-};
-
-export const removeMemberFromGroup = (memberId, groupId) => {
-  return (dispatch, getState) => {
-    const { ussToken } = getState();
-    dispatch({ type: REMOVE_FROM_GROUP_PENDING });
-    axios.post('http://localhost:8000/api/removeFromGroup', {
-      chatId: groupId,
-      userId: memberId,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${ussToken}`,
-      }
-    }).then(res => dispatch({ type: REMOVE_FROM_GROUP_FULFILLED, payload: res }))
-      .catch(err => dispatch({ type: REMOVE_FROM_GROUP_REJECTED, payload: err }));
-  };
-};
-
-export const sendMessage = (chatId, messageContent) => {
-  return (dispatch, getState) => {
-    const { ussToken } = getState();
-    dispatch({ type: SEND_MESSAGE_PENDING });
-    axios.post('http://localhost:8000/api/sendMessage', {
-      chatId,
-      content: messageContent,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${ussToken}`,
-      }
-    })
-      .then(res => dispatch({ type: SEND_MESSAGE_FULFILLED, payload: res }))
-      .catch(err => dispatch({ type: SEND_MESSAGE_REJECTED, payload: err }));
-  };
-};
-
-export const fetchAllMessagesOfChat = (chatId) => {
-  return (dispatch, getState) => {
-    const { ussToken } = getState();
-    dispatch({ type: FETCH_CHAT_MESSAGE_PENDING });
-    axios.get(`http://localhost:8000/api/${chatId}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${ussToken}`,
-      }
-    })
-      .then(res => dispatch({ type: FETCH_CHAT_MESSAGE_FULFILLED, payload: res }))
-      .catch(err => dispatch({ type: FETCH_CHAT_MESSAGE_REJECTED, payload: err }));
-  };
-};
-
-export const setSocketInStore = (socket) => {
-  return (dispatch) => {
-    dispatch({ type: SET_SOCKET_IN_STORE, payload: { SOCKET: socket } })
-  }
-};
-
-export const setNotificationArray = (newMessage) => {
-  console.log('----------------------------------------------------------------' , newMessage)
-  return (dispatch) => {
-    dispatch({ type: SET_NOTIFICATION_ARRAY, payload: { newMessage } })
-  };
-};
+} 

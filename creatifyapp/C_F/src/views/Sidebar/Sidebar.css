@@ -38,21 +38,3 @@
     font-size: 13px;
     /* color: ; */
 }
-
-.desktopScreenDrawer > div {
-    width: 50px !important;
-}
-
-.sideBarButton {
-    padding: 0 !important;
-    margin: 10px 0 10px 0 !important;
-    /* border: 2px solid red !important; */
-}
-
-.listOfShrinkSidebar {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    height: 100%;
-}

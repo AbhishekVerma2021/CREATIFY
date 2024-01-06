@@ -11,7 +11,6 @@ import Sidebar from './views/Sidebar';
 import CreatePost from './views/CreatePost';
 import Favourites from './views/Favourites';
 import CommanProfileView from './views/CommanProfileView';
-import UserChatView from './views/UserChatView';
 function App() {
   return (
     <div>
@@ -46,12 +45,6 @@ function App() {
             <Route path='/commanProfile' element={
               <Sidebar>
                 <ProtectedRoute componentPath={'/commanProfile'} Component={CommanProfileView} />
-              </Sidebar>
-            }
-            />
-            <Route path='/messages' element={
-              <Sidebar>
-                <ProtectedRoute componentPath={'/messages'} Component={UserChatView} />
               </Sidebar>
             }
             />
