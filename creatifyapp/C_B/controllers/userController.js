@@ -183,11 +183,24 @@ const getUserProfile = async (req, res) => {
         res.status(200).send(error);
       }
 }
+
+const searchUser = async (req, res) => {
+  try {
+
+  }
+  catch(er) {
+    res.send(er);
+  }
+}
+
+const handleChat = async (req, res) => {};
 module.exports = {
   registerUser,
   loginUser,
+  handleChat,
   validateToken,
   followUser,
   getAllUsers,
-  getUserProfile
+  getUserProfile,
+  searchUser,
 };

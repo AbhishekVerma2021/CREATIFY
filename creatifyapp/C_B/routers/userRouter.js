@@ -9,4 +9,6 @@ router.get("/validateToken", authenticate, UserController.validateToken);
 router.post("/follow", authenticate, UserController.followUser);
 router.get("/getUsers", authenticate, UserController.getAllUsers);
 router.get("/profile", authenticate, UserController.getUserProfile);
+router.get("/searchUser", authenticate, UserController.searchUser);
+
 module.exports = router;

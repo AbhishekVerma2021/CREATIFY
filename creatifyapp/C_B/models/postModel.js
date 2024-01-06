@@ -26,7 +26,7 @@ const userSchema=new mongoose.Schema({
     },
     user:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'USER',
+        ref:'User',
         required: true
     },
     comments: [commentSchema],

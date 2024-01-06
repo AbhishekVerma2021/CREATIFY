@@ -1,0 +1,75 @@
+.masterUserChatSectionContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  width: 79%;
+  margin: 0 10px;
+  /* border: 2px solid red; */
+  flex-direction: column;
+  border-radius: 10px !important;
+  background-color: #1976d2 !important;
+  padding: 10px;
+}
+
+.ChatBoxHeaderContainer,
+.chatboxChatDiaplayArea,
+.chatBoxSenMessageTextfieldContainer {
+  width: 100%;
+  /* border: 2px solid; */
+}
+
+.ChatBoxHeaderContainer {
+  color: white;
+  height: 60px;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* padding: 15px; */
+  font-weight: 700;
+  font-size: 25px;
+}
+
+.chatboxChatDiaplayArea {
+  height: 74%;
+  background-color: white;
+  width: 100%;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.chatBoxSenMessageTextfieldContainer {
+  /* border: 2px solid red; */
+  height: 10%; 
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.sendMessageTextFieldContainer {
+  width: 94%;
+  height: 100%;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  /* padding: 10px; */
+  background-color: white;
+}
+.sendButtonContainer {
+  border-radius: 10000vw;
+  text-align: center;
+  padding: 7px;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+
+.sendButtonContainer:hover {
+  /* transform: none; */
+  background: rgb(9,9,121);
+background: radial-gradient(circle, rgba(9,9,121,0.1092086492800245) 22%, rgba(255,255,255,1) 100%);
+}
