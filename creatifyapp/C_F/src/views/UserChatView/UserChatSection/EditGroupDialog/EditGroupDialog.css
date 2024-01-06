@@ -1,0 +1,22 @@
+.groupMembersListContainer {
+  overflow: auto;
+  /* border: 2px solid red; */
+  /* max-height: ; */
+  max-height: 27vh;
+}
+
+
+.memberListCard {
+  margin: 5px 0;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.memberNameContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* width: 60%; */
+}
