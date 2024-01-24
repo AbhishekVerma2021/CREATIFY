@@ -52,10 +52,45 @@ import {
   FETCH_ALL_USERS_PENDING,
   FETCH_ALL_USERS_FULFILLED,
   FETCH_ALL_USERS_REJECTED,
+  CREATE_CHAT,
+  CREATE_CHAT_PENDING,
+  CREATE_CHAT_FULFILLED,
+  CREATE_CHAT_REJECTED,
+  FETCH_ALL_CHATS,
+  FETCH_ALL_CHATS_PENDING,
+  FETCH_ALL_CHATS_FULFILLED,
+  FETCH_ALL_CHATS_REJECTED,
+  CREATE_CHAT_GROUP,
+  CREATE_CHAT_GROUP_PENDING,
+  CREATE_CHAT_GROUP_FULFILLED,
+  CREATE_CHAT_GROUP_REJECTED,
+  RENAME_GROUP,
+  RENAME_GROUP_PENDING,
+  RENAME_GROUP_FULFILLED,
+  RENAME_GROUP_REJECTED,
+  ADD_TO_GROUP,
+  ADD_TO_GROUP_PENDING,
+  ADD_TO_GROUP_FULFILLED,
+  ADD_TO_GROUP_REJECTED,
+  REMOVE_FROM_GROUP,
+  REMOVE_FROM_GROUP_PENDING,
+  REMOVE_FROM_GROUP_FULFILLED,
+  REMOVE_FROM_GROUP_REJECTED,
+  SEND_MESSAGE,
+  SEND_MESSAGE_PENDING,
+  SEND_MESSAGE_FULFILLED,
+  SEND_MESSAGE_REJECTED,
+  FETCH_CHAT_MESSAGE,
+  FETCH_CHAT_MESSAGE_PENDING,
+  FETCH_CHAT_MESSAGE_FULFILLED,
+  FETCH_CHAT_MESSAGE_REJECTED,
+  SET_SOCKET_IN_STORE,
+  SET_NOTIFICATION_ARRAY,
 } from './actionTypes';
 
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+// import socket from 'socket.io-client';
 
 
 const initialState = {
@@ -88,10 +123,260 @@ const initialState = {
   imageURL: '',
   pageHeaderText: '',
   allUsersList: [],
+  selectedChat: undefined,
+  allUserChats: [],
+  activeChatMessagesArray: [],
+  SOCKET: null,
+  notifications: [],
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+
+    case SET_NOTIFICATION_ARRAY: {
+      const { newMessage } = action.payload;
+      return {
+        notifications: [newMessage, ...state.notifications],
+      }
+    }
+
+    case SET_SOCKET_IN_STORE: {
+      const { SOCKET } = action.payload;
+      return {
+        ...state,
+        SOCKET,
+      }
+    }
+    case SEND_MESSAGE: {
+      return {
+        ...state,
+      }
+    }
+    case SEND_MESSAGE_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case SEND_MESSAGE_FULFILLED: {
+      const { data } = action.payload;
+      // const { _id } = data;
+      toast.success('Message Sent', {
+        position: toast.POSITION.BOTTOM_LEFT,
+      });
+      
+      state.SOCKET.emit("new message", data);
+      // console.log(_id, data)
+      let newSelectedChatMessageArray = [...state.activeChatMessagesArray, data];
+      // console.log('New Message' , newSelectedChatMessageArray, state.activeChatMessagesArray)
+      return {
+        ...state,
+        activeChatMessagesArray: newSelectedChatMessageArray,
+      }
+    }
+    case SEND_MESSAGE_REJECTED: {
+      return {
+        ...state,
+      }
+    }
+
+    case FETCH_CHAT_MESSAGE: {
+      return {
+        ...state,
+      }
+    }
+    case FETCH_CHAT_MESSAGE_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case FETCH_CHAT_MESSAGE_FULFILLED: {
+      const { data } = action.payload;
+      // console.log(data);
+      return {
+        ...state,
+        activeChatMessagesArray: data,
+      }
+    }
+    case FETCH_CHAT_MESSAGE_REJECTED: {
+      return {
+        ...state,
+      }
+    }
+
+
+    case RENAME_GROUP: {
+      return {
+        ...state,
+      }
+    }
+    case RENAME_GROUP_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case RENAME_GROUP_FULFILLED: {
+      const { data } = action.payload;
+      // console.log(data);
+      const { _id } = data;
+      const newAllUserChats = state.allUserChats.map(chat => {
+        // console.log(chat._id,_id)
+        if(chat._id === _id) return data;
+        return chat;
+      });
+      // console.log(newAllUserChats);
+      toast.success('RENAMED!!!', {
+        position: toast.POSITION.BOTTOM_LEFT,
+      })
+      return {
+        ...state,
+        allUserChats: newAllUserChats,
+      }
+    };
+    case RENAME_GROUP_REJECTED: {
+      console.log(action.payload)
+      return {
+        ...state,
+      }
+    }
+    case REMOVE_FROM_GROUP: {
+      return {
+        ...state,
+      }
+    };
+    case REMOVE_FROM_GROUP_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case REMOVE_FROM_GROUP_FULFILLED: {
+      const { data } = action.payload;
+      const { _id } = data;
+      const newAllUserChats = state.allUserChats.map(chat => chat._id === _id ? data : chat);
+      toast.success('Removed!!', {
+        position: toast.POSITION.BOTTOM_LEFT,
+      })
+      return {
+        ...state,
+        allUserChats: newAllUserChats,
+      }
+    };
+    case REMOVE_FROM_GROUP_REJECTED: {
+      console.log(action.payload)
+      return {
+        ...state,
+      }
+    };
+    case ADD_TO_GROUP: {
+      return {
+        ...state,
+      }
+    };
+    case ADD_TO_GROUP_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case ADD_TO_GROUP_FULFILLED: {
+      const { data } = action.payload;
+      const { _id } = data;
+      const newAllUserChats = state.allUserChats.map(chat => chat._id === _id ? data : chat);
+      toast.success('Added to group!!', {
+        position: toast.POSITION.BOTTOM_LEFT,
+      })
+      return {
+        ...state,
+        allUserChats: newAllUserChats,
+      }
+    };
+    case ADD_TO_GROUP_REJECTED: {
+      console.log(action.payload)
+      return {
+        ...state,
+      }
+    }
+    
+    case CREATE_CHAT_GROUP: {
+      return {
+        ...state,
+      }
+    };
+    case CREATE_CHAT_GROUP_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case CREATE_CHAT_GROUP_FULFILLED: {
+      const { data } = action.payload;
+      toast.success('Created chat group', {
+        position: toast.POSITION.BOTTOM_LEFT,
+      })
+      return {
+        ...state,
+        // allUserChats: data,
+      }
+    };
+    case CREATE_CHAT_GROUP_REJECTED: {
+      console.log(action.payload)
+      return {
+        ...state,
+      }
+    }
+    
+    case FETCH_ALL_CHATS: {
+      return {
+        ...state,
+      }
+    };
+    case FETCH_ALL_CHATS_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case FETCH_ALL_CHATS_FULFILLED: {
+      const { data } = action.payload;
+      return {
+        ...state,
+        allUserChats: data,
+      }
+    };
+    case FETCH_ALL_CHATS_REJECTED: {
+      console.log(action.payload)
+      return {
+        ...state,
+      }
+    }
+
+
+    case CREATE_CHAT: {
+      return {
+        ...state,
+      }
+    };
+    case CREATE_CHAT_PENDING: {
+      return {
+        ...state,
+      }
+    }
+    case CREATE_CHAT_FULFILLED: {
+      const chat = action.payload;
+      let existingChatFlag = false;
+      if (!state.allUserChats.find(c => c._id === chat._id)) {
+        existingChatFlag = true;
+      }
+      return {
+        ...state,
+        allUserChats: existingChatFlag ? [chat, ...state.allUserChats] : state.allUserChats,
+        selectedChat: chat,
+      }
+    };
+    case CREATE_CHAT_REJECTED: {
+      console.log(action.payload)
+      return {
+        ...state,
+      }
+    }
+
+
     case FETCH_ALL_POSTS: {
       return {
         ...state,
@@ -99,7 +384,7 @@ const reducer = (state = initialState, action) => {
     }
     case FETCH_ALL_POSTS_FULFILLED: {
       const { posts } = action.payload;
-      console.log(posts)
+      // console.log(posts)
       const likesForPost = {};
       posts.forEach((post) => likesForPost[post._id] = post.likes);
       return {
@@ -159,7 +444,7 @@ const reducer = (state = initialState, action) => {
     }
     case LOGIN_USER_FULFILLED: {
       const { data: { token, user: { username, email, _id, followers, following, favorites } } } = action.payload;
-      console.log(following, action.payload)
+      // console.log(following, action.payload)
       toast.success(`Welcome ${username}`, {
         position: toast.POSITION.BOTTOM_LEFT
       });
@@ -172,7 +457,7 @@ const reducer = (state = initialState, action) => {
         followers,
         favorites: favorites,
       }
-      console.log(user)
+      // console.log(user)
       return {
         ...state,
         isLoading: false,
@@ -205,7 +490,7 @@ const reducer = (state = initialState, action) => {
       const { user, favoritePosts } = action.payload;
       const token = localStorage.getItem('TOKEN')
       const { favorites, username, email, _id, followers, following } = user;
-      
+
       return {
         ...state,
         isUserLoggedIn: true,
@@ -237,7 +522,7 @@ const reducer = (state = initialState, action) => {
         isUserLoggedIn: false,
       }
     }
-    
+
     case FETCH_PROFILE_DETAILS: {
       return {
         ...state,
@@ -270,7 +555,7 @@ const reducer = (state = initialState, action) => {
           _id,
           email,
         } = userDetails;
-        console.log(userDetails)
+        // console.log(userDetails)
         return {
           ...state,
           selectedUserProfileDetails: {
@@ -290,7 +575,7 @@ const reducer = (state = initialState, action) => {
         ...state,
       }
     }
-    
+
     case USER_COMMENT: {
       return {
         ...state,
@@ -315,7 +600,7 @@ const reducer = (state = initialState, action) => {
         ...state,
       }
     }
-    
+
     case FETCH_COMMENTS_FOR_POST: {
       return {
         ...state,
@@ -340,7 +625,7 @@ const reducer = (state = initialState, action) => {
         ...state,
       }
     }
-    
+
     case HANDLE_LIKES: {
       return {
         ...state,
@@ -352,7 +637,7 @@ const reducer = (state = initialState, action) => {
       }
     }
     case HANDLE_LIKES_FULFILLED: {
-      console.log(action.payload)
+      // console.log(action.payload)
       return {
         ...state,
       }
@@ -404,7 +689,7 @@ const reducer = (state = initialState, action) => {
       }
     }
     case CREATE_POST_FULFILLED: {
-      console.log(action.payload);
+      // console.log(action.payload);
       toast.success(action.payload, { position: toast.POSITION.BOTTOM_LEFT })
       return {
         ...state,
@@ -497,7 +782,7 @@ const reducer = (state = initialState, action) => {
     }
     case FETCH_ALL_USERS_FULFILLED: {
       const { users } = action.payload;
-      console.log(users);
+      // console.log(users);
       return {
         ...state,
         allUsersList: users,
