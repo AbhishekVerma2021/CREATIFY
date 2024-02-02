@@ -108,12 +108,12 @@ const UserChatSection = (props) => {
     SOCKET.on("message recieved", (newMessageRecieved) => {
       // console.log('newMessageRecieved--->', newMessageRecieved)
       // alert('newMessageRecieved')
-      console.log(selectedChatCompare, newMessageRecieved)
+      // console.log(selectedChatCompare, newMessageRecieved)
       if (!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id) {
         // give notification
         if(!notifications.includes(newMessageRecieved)) {
-          setNotificationArray(newMessageRecieved);
-          setNotificationFlag(true);
+          // setNotificationArray(newMessageRecieved);
+          // setNotificationFlag(true);
         }
       }
       else {

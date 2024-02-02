@@ -13,4 +13,6 @@ export const mapStateToProps = (state) => ({
     isUserLoggedIn: state.isUserLoggedIn,
     activeUserDetails: state.activeUserDetails,
     allUsersList: state.allUsersList,
+    isLoading: state.isLoading,
+    isLoadingUsersList: state.isLoadingUsersList,
 });

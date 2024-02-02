@@ -1,0 +1,27 @@
+.useraListShimmerContainer {
+  width: 85% !important;
+  /* padding: 10px; */
+}
+
+.userDetailsShimmerContainer {
+  margin-top: 20px !important;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  gap: 10%
+}
+
+.circleContainer {
+  width: 20%;
+  height: 100%;
+}
+
+.textShimmerContainer {
+  width: 70%;
+}
+
+.circularLoader {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}

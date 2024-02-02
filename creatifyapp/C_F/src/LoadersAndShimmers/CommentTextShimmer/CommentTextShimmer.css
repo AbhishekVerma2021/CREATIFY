@@ -1,0 +1,17 @@
+.commentListShimmerContainer {
+  width: 100%;
+
+  padding: 0 18px;
+}
+
+.commentShimmerContainer {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  align-items: center;
+}
+
+.commentCircleContainer {
+  height: 40px;
+  width: 40px;
+}

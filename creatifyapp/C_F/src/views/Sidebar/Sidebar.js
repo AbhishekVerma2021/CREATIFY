@@ -141,7 +141,7 @@ const Sidebar = (props) => {
 
   const container = window !== undefined ? () => window().document.body : undefined;
   const drawer = (
-    <div className={shrinkSidebar ? 'listOfShrinkSidebar' : ''}>
+    <div className={shrinkSidebar ? 'sideBarContainer listOfShrinkSidebar' : 'sideBarContainer'}>
       {!shrinkSidebar && <span>
         <div className='avatarConatiner'>
           <Avatar sx={{ bgcolor: red[500], height: "125px", width: "125px" }} aria-label="recipe">
@@ -285,6 +285,7 @@ const Sidebar = (props) => {
       <AppBar
         position="fixed"
         sx={{
+          // backgroundColor: 'red',
           width: { sm: `calc(100% - ${shrinkSidebar ? 70 : drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
         }}
@@ -331,6 +332,8 @@ const Sidebar = (props) => {
           // className='desktopScreenDrawer'
           sx={{
             // width: "50px !important",
+            // backgroundColor: 'red',
+            border: '2px solid red',
             display: { xs: 'none', sm: 'block' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: shrinkSidebar ? 70 : drawerWidth },
           }}

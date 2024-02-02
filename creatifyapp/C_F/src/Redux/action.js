@@ -93,7 +93,7 @@ export const submitUser = (username, email, password) => {
 
   return {
     type: SUBMIT_USER,
-    payload: axios.post('http://localhost:8000/api/register', data)
+    payload: axios.post('https://creatify-backend.onrender.com/api/register', data)
       .then((res) => {
         return res.data; // Make sure to return the relevant data from the Promise
       })
@@ -113,7 +113,7 @@ export const loginUser = (email, password, navigate) => {
   return (dispatch) => {
     dispatch({ type: LOGIN_USER });
 
-    axios.post('http://localhost:8000/api/login', data)
+    axios.post('https://creatify-backend.onrender.com/api/login', data)
       .then((res) => {
         dispatch({ type: LOGIN_USER_FULFILLED, payload: res });
         navigate('/');
@@ -135,7 +135,7 @@ export const validateLoginStatus = (navigate, componentPath) => {
   }
   else {
     return (dispatch) => {
-      axios.get('http://localhost:8000/api/validateToken', {
+      axios.get('https://creatify-backend.onrender.com/api/validateToken', {
         headers: {
           authorization: `Bearer ${localStorage.getItem('TOKEN')}`
         }
@@ -158,7 +158,7 @@ export const fetchAllPostData = () => {
     dispatch({ type: FETCH_ALL_POSTS_PENDING });
 
 
-    axios.post('http://localhost:8000/api/posts',
+    axios.post('https://creatify-backend.onrender.com/api/posts',
       { user: activeUserDetails },
       {
         headers: {
@@ -180,7 +180,7 @@ export const fetchProfileIdDetails = (profileId) => {
     const { ussToken } = getState();
 
     dispatch({ type: FETCH_PROFILE_DETAILS_PENDING });
-    axios.get(`http://localhost:8000/api/profile?_id=${profileId}`,
+    axios.get(`https://creatify-backend.onrender.com/api/profile?_id=${profileId}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -197,22 +197,20 @@ export const fetchProfileIdDetails = (profileId) => {
 export const handleCommentOnPost = (commentString, postId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
-    dispatch({
-      type: USER_COMMENT,
-      payload: axios.post('http://localhost:8000/api/comment', {
-        comment: commentString,
-        postId,
-      },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${ussToken}`,
-          },
-        }).then((res) => {
-          return res.data;
-        })
-        .catch((er) => { throw er; })
-    })
+    dispatch({ type: USER_COMMENT_PENDING });
+    axios.post('https://creatify-backend.onrender.com/api/comment', {
+      comment: commentString,
+      postId,
+    },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ussToken}`,
+        },
+      }).then((res) => {
+        dispatch({ type: USER_COMMENT_FULFILLED, payload: res.data });
+      })
+      .catch((er) => { dispatch({ type: USER_COMMENT_REJECTED, payload: er }) })
   }
 };
 
@@ -222,7 +220,7 @@ export const fetchPostsComments = (postId) => {
     if (!Object.keys(postsComments).includes(postId)) {
       dispatch({
         type: FETCH_COMMENTS_FOR_POST,
-        payload: axios.get(`http://localhost:8000/api/fetchComments?postId=${postId}`,
+        payload: axios.get(`https://creatify-backend.onrender.com/api/fetchComments?postId=${postId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -242,25 +240,26 @@ export const handleLikesAndDislikes = (postId, like) => {
   return (dispatch, getState) => {
     const { ussToken, activeUserDetails } = getState();
     const { _id } = activeUserDetails;
-    dispatch({
-      type: HANDLE_LIKES,
-      payload: axios.post(`http://localhost:8000/api/like`,
-        {
-          postId,
-          like: !like,
+    dispatch({ type: HANDLE_LIKES_PENDING });
+    axios.post(`https://creatify-backend.onrender.com/api/like`,
+      {
+        postId,
+        like: !like,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ussToken}`,
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${ussToken}`,
-          },
-        })
-        .then((res) => {
-          dispatch(fetchAllPostData());
-          return res.data;
-        })
-        .catch((er) => { throw er; })
-    })
+      })
+      .then((res) => {
+        dispatch({ type: HANDLE_LIKES_FULFILLED, payload: res.data });
+        // dispatch(fetchAllPostData());
+        // return res.data;
+      })
+      .catch((er) => {
+        dispatch({ type: HANDLE_LIKES_REJECTED, payload: er })
+      })
   }
 };
 
@@ -300,7 +299,7 @@ export const createPost = (postData) => {
       const { ussToken } = getState();
       if (imageURL) {
         dispatch({ type: CREATE_POST_PENDING });
-        axios.post('http://localhost:8000/api/new-post', {
+        axios.post('https://creatify-backend.onrender.com/api/new-post', {
           url: imageURL,
           desc: description,
           caption,
@@ -330,7 +329,7 @@ export const followAccount = (accountId) => {
     const { ussToken } = getState();
     console.log(ussToken);
     dispatch({ type: FOLLOW_ACCOUNT_PENDING });
-    axios.post('http://localhost:8000/api/follow', {
+    axios.post('https://creatify-backend.onrender.com/api/follow', {
       followedAcountId: accountId,
     },
       {
@@ -352,7 +351,7 @@ export const setFavouritePost = (postId, postUid) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: FAVORITE_POST_PENDING });
-    axios.post('http://localhost:8000/api/favorites', {
+    axios.post('https://creatify-backend.onrender.com/api/toggleFavorite', {
       post_id: postId,
       post_uId: postUid,
     },
@@ -380,7 +379,7 @@ export const fetchAllUsers = () => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: FETCH_ALL_USERS_PENDING });
-    axios.get('http://localhost:8000/api/getUsers', {
+    axios.get('https://creatify-backend.onrender.com/api/getUsers', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${ussToken}`,
@@ -395,7 +394,7 @@ export const createNewChat = (userId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: CREATE_CHAT_PENDING });
-    axios.post('http://localhost:8000/api/chat', {
+    axios.post('https://creatify-backend.onrender.com/api/chat', {
       userId,
     },
       {
@@ -413,7 +412,7 @@ export const fetchAllChats = (token) => {
     const { ussToken } = getState();
     // console.log(ussToken)
     dispatch({ type: FETCH_ALL_CHATS_PENDING });
-    axios.get('http://localhost:8000/api/getUserChats', {
+    axios.get('https://creatify-backend.onrender.com/api/getUserChats', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${ussToken ? ussToken : token}`,
@@ -428,7 +427,7 @@ export const createChatGroup = (usersIdArray, groupName) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: CREATE_CHAT_GROUP_PENDING });
-    axios.post('http://localhost:8000/api/createGroup', {
+    axios.post('https://creatify-backend.onrender.com/api/createGroup', {
       users: usersIdArray,
       group_name: groupName,
     }, {
@@ -446,7 +445,7 @@ export const editGroupName = (newGroupName, groupId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: RENAME_GROUP_PENDING });
-    axios.post('http://localhost:8000/api/renameGroup', {
+    axios.post('https://creatify-backend.onrender.com/api/renameGroup', {
       chatId: groupId,
       updated_name: newGroupName,
     }, {
@@ -464,7 +463,7 @@ export const addNewMemberToGroup = (memberId, groupId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: ADD_TO_GROUP_PENDING });
-    axios.post('http://localhost:8000/api/addToGroup', {
+    axios.post('https://creatify-backend.onrender.com/api/addToGroup', {
       chatId: groupId,
       userId: memberId,
     }, {
@@ -481,7 +480,7 @@ export const removeMemberFromGroup = (memberId, groupId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: REMOVE_FROM_GROUP_PENDING });
-    axios.post('http://localhost:8000/api/removeFromGroup', {
+    axios.post('https://creatify-backend.onrender.com/api/removeFromGroup', {
       chatId: groupId,
       userId: memberId,
     }, {
@@ -498,7 +497,7 @@ export const sendMessage = (chatId, messageContent) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: SEND_MESSAGE_PENDING });
-    axios.post('http://localhost:8000/api/sendMessage', {
+    axios.post('https://creatify-backend.onrender.com/api/sendMessage', {
       chatId,
       content: messageContent,
     }, {
@@ -516,7 +515,7 @@ export const fetchAllMessagesOfChat = (chatId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: FETCH_CHAT_MESSAGE_PENDING });
-    axios.get(`http://localhost:8000/api/${chatId}`, {
+    axios.get(`https://creatify-backend.onrender.com/api/${chatId}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${ussToken}`,
@@ -534,7 +533,7 @@ export const setSocketInStore = (socket) => {
 };
 
 export const setNotificationArray = (newMessage) => {
-  console.log('----------------------------------------------------------------' , newMessage)
+  console.log('----------------------------------------------------------------', newMessage)
   return (dispatch) => {
     dispatch({ type: SET_NOTIFICATION_ARRAY, payload: { newMessage } })
   };

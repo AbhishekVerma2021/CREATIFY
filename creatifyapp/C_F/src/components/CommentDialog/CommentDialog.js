@@ -13,6 +13,7 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
+import CommentTextShimmer from '../../LoadersAndShimmers/CommentTextShimmer'
 import './CommentDialog.css'
 import { toast } from 'react-toastify';
 
@@ -31,6 +32,7 @@ const CommentDialog = (props) => {
     postId,
     postsComments,
     fetchPostsComments,
+    isCommentDialogLoading,
   } = props;
 
   const { username } = activeUserDetails;
@@ -55,6 +57,7 @@ const CommentDialog = (props) => {
       alert("Error")
     }
   };
+  console.log(isCommentDialogLoading);
   return (
 
     <Dialog
@@ -65,9 +68,9 @@ const CommentDialog = (props) => {
       aria-describedby="alert-dialog-slide-description"
       fullWidth={'50vw'}
     >
-      <DialogTitle>{"Comments"}</DialogTitle>
+      <DialogTitle>{"Comments"}{JSON.stringify(isCommentDialogLoading)}</DialogTitle>
       <DialogContent>
-        <div className='commentsListContainer'>
+        {isCommentDialogLoading ? <div className="commentLoader"><CommentTextShimmer/></div> : <div className='commentsListContainer'>
           {
             postsComments && Object.keys(postsComments).length > 0 && postsComments[postId] && [...postsComments[postId]].reverse().map((commentObj) => {
               const { comment, username } = commentObj;
@@ -99,9 +102,9 @@ const CommentDialog = (props) => {
               );
             })
           }
-        </div>
-        <Box sx={{ width: '88%', margin: '20px 0 0 12%', display: 'flex', alignItems: 'flex-end' }}>
-          <Avatar sx={{ bgcolor: 'orange', height: '30px', width: '30px' }} aria-label="recipe">
+        </div>}
+        <Box sx={{ width: '100%', padding: '18px', display: 'flex', alignItems: 'flex-end' }}>
+          <Avatar sx={{ bgcolor: 'orange', height: '40px', width: '40px' }} aria-label="recipe">
             <span>{username.slice(0, 1).toUpperCase()}</span>
           </Avatar>
           <TextField

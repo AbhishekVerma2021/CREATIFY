@@ -121,46 +121,46 @@ const likePost = async (req, res) => {
   }
 };
 const toggleFavoritePost = async (req, res) => {
-    const { post_id, post_uId } = req.body;
-    const { user } = req;
-    try {
-      const {
-        _id,
-      } = user;
-      const userAccount  = await Users.findById(_id);
-      const postOwnerAccount = await Users.findById(post_uId);
-      const favouritePostIdArray = userAccount.favorites.map((obj) => obj.postId);
-      let messageFlag = true;
-      if(favouritePostIdArray.includes(post_id))
-      {
-        messageFlag = false;
-        userAccount.favorites = userAccount.favorites.filter((item) => item.postId.toString() !== post_id);
-      }
-      else {
-        const favouritePost = {
-          uId: post_uId,
-          postId: post_id,
-          username: postOwnerAccount.username,
-          email: postOwnerAccount.email,
-        };
-    
-        userAccount.favorites.push(favouritePost);
-      }
-      await userAccount.save();
-      
-      const favouritePostArray = await Promise.all(
-        favouritePostIdArray.map(async (postId) => {
-          const post = await Post.findById(postId).populate("user", "_id username email");
-          return post; 
-        })
-      );
-  
-      console.log(favouritePostArray)
-      res.send({ favouritePosts: favouritePostArray, favouritePostIds: userAccount.favorites, message: messageFlag ? 'Added to your favorits!!' : 'Removed from favorits!!' })
+  const { post_id, post_uId } = req.body;
+  const { user } = req;
+  try {
+    const {
+      _id,
+    } = user;
+    const userAccount = await Users.findById(_id);
+    const postOwnerAccount = await Users.findById(post_uId);
+    let favouritePostIdArray = userAccount.favorites.map((obj) => obj.postId);
+    let messageFlag = true;
+    if (favouritePostIdArray.includes(post_id)) {
+      messageFlag = false;
+      userAccount.favorites = userAccount.favorites.filter((item) => item.postId.toString() !== post_id);
     }
-    catch (err) {
-      res.send(err);
+    else {
+      const favouritePost = {
+        uId: post_uId,
+        postId: post_id,
+        username: postOwnerAccount.username,
+        email: postOwnerAccount.email,
+      };
+
+      userAccount.favorites.push(favouritePost);
     }
+    await userAccount.save();
+    if (messageFlag)
+      favouritePostIdArray.push(post_id)
+    else
+      favouritePostIdArray = favouritePostIdArray.filter(id => id !== post_id);
+    const favouritePostArray = await Promise.all(
+      favouritePostIdArray.map(async (postId) => {
+        const post = await Post.findById(postId).populate("user", "_id username email");
+        return post;
+      })
+    );
+    res.send({ favoritePosts: favouritePostArray, favoritePostIds: userAccount.favorites, message: messageFlag ? 'Added to your favorits!!' : 'Removed from favorits!!' })
+  }
+  catch (err) {
+    res.send(err);
+  }
 }
 
 module.exports = {

@@ -12,11 +12,14 @@ import {
   CardContent,
   CardActions,
   CardHeader,
+  CircularProgress,
 } from "@mui/material";
+import CircularLoader from "../../LoadersAndShimmers/CircularLoader";
+import ProfilePageShimmers from "../../LoadersAndShimmers/ProfilePageShimmers";
 
 import CommanPostCard from './CommanPostCard';
 import './CommanProfileView.css';
-
+import LineLoader from "../../LoadersAndShimmers/LineLoader";
 
 
 
@@ -29,6 +32,7 @@ const CommanProfileView = (props) => {
     selectedUserId,
     followAccount,
     selectedUserProfileDetails,
+    isLoading,
   } = props;
 
 
@@ -79,7 +83,7 @@ const CommanProfileView = (props) => {
         <div className="masterProfileDetailsContiner">
           <div className="profileHeaderContainer">
             <div className="profileUsernameContainer">
-              {fetchedProfileUsername}
+              {isLoading ? <LineLoader fontSize='1.1rem' width='100px'/> : fetchedProfileUsername}
             </div>
             <IconButton aria-label="settings" onClick={() => handleFollowClick()}>
               {follow ? <PersonRemoveIcon /> : <PersonAddIcon />}
@@ -89,19 +93,19 @@ const CommanProfileView = (props) => {
           <div className="profilePostsFollowersContainer">
             <Paper elevation={3} className="paperBlocks">
               <span>Posts</span>
-              <span>{fetchedProfilePosts && fetchedProfilePosts.length}</span>
+              <span>{isLoading ? <CircularLoader size='20px' /> : fetchedProfilePosts && fetchedProfilePosts.length}</span>
             </Paper>
             <Paper elevation={3} className="paperBlocks">
               <span>Followers</span>
-              <span>{fetchedProfileFollowers && fetchedProfileFollowers.length}</span>
+              <span>{isLoading ? <CircularLoader size='20px' /> : fetchedProfileFollowers && fetchedProfileFollowers.length}</span>
             </Paper>
             <Paper elevation={3} className="paperBlocks">
               <span>Following</span>
-              <span>{fetchedProfileFollowing && fetchedProfileFollowing.length}</span>
+              <span>{isLoading ? <CircularLoader size='20px' /> : fetchedProfileFollowing && fetchedProfileFollowing.length}</span>
             </Paper>
           </div>
           <div className="profileFurtherDetailsContainer">
-            <span>{fetchedProfileEmail}</span>
+            <span>{isLoading ? <LineLoader width={'60%'}/> : fetchedProfileEmail}</span>
           </div>
         </div>
       </div>
@@ -109,11 +113,12 @@ const CommanProfileView = (props) => {
         <hr className="profileHr" />
       </div>
       <div className="commanProfilePostsContainer">
-        {fetchedProfilePosts && fetchedProfilePosts.length > 0 && fetchedProfilePosts.map((post) => {
+        {isLoading ? <ProfilePageShimmers count={3} /> : fetchedProfilePosts && fetchedProfilePosts.length > 0 && fetchedProfilePosts.map((post) => {
           return <CommanPostCard post={post} />
         })}
       </div>
-      </div>
+      {isLoading && <CircularLoader />}
+    </div>
   );
 };
 

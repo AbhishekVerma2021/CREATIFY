@@ -1,0 +1,14 @@
+.homePageSkeletonCard {
+  width: 35vw;
+  height: 60vh !important;
+}
+
+.homePageLoaders {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.shimmerCardCoontent {
+  /* height: vh; */
+}

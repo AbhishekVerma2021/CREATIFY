@@ -20,3 +20,25 @@
     /* border: 2px solid red; */
     justify-content: center;
 }
+
+.homePageShimmersContainer {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.homePageShimmers {
+    width: 60%;
+}
+
+.userListShimmer {
+    width: 25% !important;
+    margin: 5vh 0 0 5vh;
+    height: 43vh;
+    /* display: flex; */
+    /* align-items: center; */
+    /* justify-content: start; */
+    /* flex-direction: column; */
+    /* margin-left: 5vw !important; */
+    /* border: 2px solid red; */
+}

@@ -1,0 +1,14 @@
+.fullPageLoaderContainer {
+  height: 100%;
+  width: 100vw;
+  background-color: #ffffffb3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  /* left:0; */
+  bottom: 0;
+  z-index: 20000;
+  overflow: hidden;
+}

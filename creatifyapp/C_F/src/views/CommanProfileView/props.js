@@ -9,4 +9,5 @@ export const mapDispatchToProps = (dispatch) => ({
 export const mapStateToProps = (state) => ({
   activeUserDetails: state.activeUserDetails,
   selectedUserProfileDetails: state.selectedUserProfileDetails,
+  isLoading: state.isLoading,
 });

@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import HomePage from './views/HomePage';
-import { Provider } from 'react-redux';
-import store from './Redux/store';
+
 import Login from './views/LoginSignup/Login';
 import Signup from './views/LoginSignup/Signup';
 import { ToastContainer } from 'react-toastify';
@@ -12,10 +11,20 @@ import CreatePost from './views/CreatePost';
 import Favourites from './views/Favourites';
 import CommanProfileView from './views/CommanProfileView';
 import UserChatView from './views/UserChatView';
-function App() {
+import FullPageLoader from './LoadersAndShimmers/FullPageLoader';
+import './App.css';
+import { connect } from 'react-redux';
+
+const App = (props) => {
+  const {
+    isFullPageloading
+  } = props;
+  
+
+
   return (
     <div>
-      <Provider store={store}>
+      <div className='routerContainer'>
         <Router>
           <Routes>
             <Route
@@ -60,9 +69,14 @@ function App() {
           </Routes>
         </Router>
         <ToastContainer />
-      </Provider>
+        {/* </Provider> */}
+      </div>
+        <FullPageLoader />
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state) => ({
+  isFullPageloading: state.isFullPageloading,
+});
+export default connect(mapStateToProps, null)(App);

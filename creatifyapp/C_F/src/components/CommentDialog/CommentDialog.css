@@ -2,3 +2,9 @@
   max-height: 53vh;
   overflow-y: auto;
 }
+
+.commentLoader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
