@@ -128,6 +128,9 @@ const initialState = {
   activeChatMessagesArray: [],
   SOCKET: null,
   notifications: [],
+  isLoadingUsersList: true,
+  isFullPageLoading: false,
+  isCommentDialogLoading: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -382,6 +385,12 @@ const reducer = (state = initialState, action) => {
         ...state,
       };
     }
+    case FETCH_ALL_POSTS_PENDING: {
+      return {
+        ...state,
+        isLoading: true,
+      }
+    }
     case FETCH_ALL_POSTS_FULFILLED: {
       const { posts } = action.payload;
       // console.log(posts)
@@ -400,12 +409,6 @@ const reducer = (state = initialState, action) => {
         ...state,
         errorForNoData: true,
         isLoading: false,
-      }
-    }
-    case FETCH_ALL_POSTS_PENDING: {
-      return {
-        ...state,
-        isLoading: true,
       }
     }
     case SUBMIT_USER: {
@@ -566,13 +569,15 @@ const reducer = (state = initialState, action) => {
             fetchedProfileId: _id,
             fetchedProfileEmail: email,
             fetchedProfilePosts: posts,
-          }
+          },
+          isLoading: false,
         }
       }
     }
     case FETCH_PROFILE_DETAILS_REJECTED: {
       return {
         ...state,
+        isLoading: false,
       }
     }
 
@@ -584,6 +589,7 @@ const reducer = (state = initialState, action) => {
     case USER_COMMENT_PENDING: {
       return {
         ...state,
+        isCommentDialogLoading: true,
       }
     }
     case USER_COMMENT_FULFILLED: {
@@ -592,12 +598,14 @@ const reducer = (state = initialState, action) => {
       postAndItsComments[postId] = comments
       return {
         ...state,
-        postsComments: { ...state.postsComments, ...postAndItsComments }
+        postsComments: { ...state.postsComments, ...postAndItsComments },
+        isCommentDialogLoading: false,
       }
     }
     case USER_COMMENT_REJECTED: {
       return {
         ...state,
+        isCommentDialogLoading: false,
       }
     }
 
@@ -609,6 +617,7 @@ const reducer = (state = initialState, action) => {
     case FETCH_COMMENTS_FOR_POST_PENDING: {
       return {
         ...state,
+        isCommentDialogLoading: true,
       }
     }
     case FETCH_COMMENTS_FOR_POST_FULFILLED: {
@@ -617,12 +626,14 @@ const reducer = (state = initialState, action) => {
       newPostComments[postId] = comments;
       return {
         ...state,
-        postsComments: { ...state.postsComments, ...newPostComments }
+        postsComments: { ...state.postsComments, ...newPostComments },
+        isCommentDialogLoading: false,
       }
     }
     case FETCH_COMMENTS_FOR_POST_REJECTED: {
       return {
         ...state,
+        isCommentDialogLoading: false,
       }
     }
 
@@ -634,17 +645,20 @@ const reducer = (state = initialState, action) => {
     case HANDLE_LIKES_PENDING: {
       return {
         ...state,
+        isFullPageLoading: true,
       }
     }
     case HANDLE_LIKES_FULFILLED: {
       // console.log(action.payload)
       return {
         ...state,
+        isFullPageLoading: false,
       }
     }
     case HANDLE_LIKES_REJECTED: {
       return {
         ...state,
+        isFullPageLoading: false,
       }
     }
 
@@ -744,7 +758,7 @@ const reducer = (state = initialState, action) => {
       }
     }
     case FAVORITE_POST_FULFILLED: {
-      const { favouritePosts, favouritePostIds, message } = action.payload;
+      const { favoritePosts, favoritePostIds, message } = action.payload;
       toast.success(message, {
         position: toast.POSITION.BOTTOM_LEFT,
       })
@@ -752,9 +766,9 @@ const reducer = (state = initialState, action) => {
         ...state,
         activeUserDetails: {
           ...state.activeUserDetails,
-          favorites: favouritePosts,
+          favorites: favoritePosts,
         },
-        favoritePostIds: favouritePostIds,
+        favoritePostIds: favoritePostIds,
       }
     }
     case FAVORITE_POST_REJECTED: {
@@ -778,6 +792,7 @@ const reducer = (state = initialState, action) => {
     case FETCH_ALL_USERS_PENDING: {
       return {
         ...state,
+        isLoadingUsersList: true,
       }
     }
     case FETCH_ALL_USERS_FULFILLED: {
@@ -786,12 +801,14 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         allUsersList: users,
+        isLoadingUsersList: false,
       }
     }
     case FETCH_ALL_USERS_REJECTED: {
       console.log(action.payload);
       return {
         ...state,
+        isLoadingUsersList: false,
       }
     }
     default: return state;

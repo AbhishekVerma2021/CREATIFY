@@ -1,0 +1,23 @@
+
+.cardHeaderContainerShimer {
+  display: flex;
+  align-items: center;
+  gap: 5%;
+  width: 100%;
+}
+
+.avatarShimmerContainer {
+  height: 40px;
+  width: 40px;
+}
+
+.postHeadertextShimmer {
+  width: 70%;
+}
+
+.profilePageCircularProgressShimmer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  /* border: 2px solid; */
+}

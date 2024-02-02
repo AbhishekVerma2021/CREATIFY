@@ -37,18 +37,18 @@ const UserChatView = (props) => {
     };
     fetchChats();
   }, [])
-  useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        await fetchAllChats();
-      }
-      catch (err) {
-        alert('Something went wrong!!');
-      }
-    };
-    notificationFlag && fetchChats();
-    // alert(JSON.stringify(notificationFlag))
-  }, [notificationFlag]);
+  // useEffect(() => {
+  //   const fetchChats = async () => {
+  //     try {
+  //       await fetchAllChats();
+  //     }
+  //     catch (err) {
+  //       alert('Something went wrong!!');
+  //     }
+  //   };
+  //   notificationFlag && fetchChats();
+  //   // alert(JSON.stringify(notificationFlag))
+  // }, [notificationFlag]);
 
 
   return (<>

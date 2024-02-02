@@ -6,6 +6,7 @@ import {
 export const mapStateToProps = (state) => ({
   activeUserDetails: state.activeUserDetails,
   postsComments: state.postsComments,
+  isCommentDialogLoading: state.isCommentDialogLoading,
 });
 
 export const mapDispatchToProps = (dispatch) => ({
