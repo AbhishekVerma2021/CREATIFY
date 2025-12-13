@@ -10,15 +10,19 @@ const app = express();
 // Connect to the database
 require("./db/connection");
 
-// Import Middleware
-const authenticate = require("./middleware/auth");
 
-// Set up middleware
-app.use(bodyParser.json());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// app.use(bodyParser.json());
+// If you're using express.json() (which is just a built-in wrapper around body-parser), you don't need to use bodyParser.json() separately. Having both might cause conflicts. Stick with express.json() and express.urlencoded().
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser());
-app.use(cors());
+
+// Configure CORS to allow both localhost and network IP
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://192.168.29.122:3000', 'http://172.24.171.114:3000' , "https://nonvacuous-arianna-subreniform.ngrok-free.dev"],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
 
 // Import Routers
 const userRouter = require("./routers/userRouter");
@@ -39,20 +43,23 @@ app.use("/api", messageRouter);
 const server = http.createServer(app);  // Create HTTP server
 const io = new Server(server, {
   cors: {
-    pingTimeout: 60000,
-    origin: 'http://localhost:3000',
-  }
+    origin: ['http://localhost:3000', 'http://192.168.29.122:3000', 'http://172.24.171.114:3000', "https://nonvacuous-arianna-subreniform.ngrok-free.dev"], // Allow both localhost and network IP
+    methods: ['GET', 'POST'],
+    credentials: true
+  },
+  pingTimeout: 60000,
 });  // Attach Socket.io to HTTP server
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
-  socket.on('setup', (userData) => {
-    console.log(userData._id);
+  console.log('A user connected');
+  socket.on('intiate-socket-setup', (userData) => {
+    console.log(`Socket room initiated by user: ${userData.email} \nuserID/roomID/socketId: ${userData._id}`);
     socket.join(userData._id);
-    socket.emit("connected");
+    socket.emit("socket-setup-success");
   });
 
-  socket.on('join room', (roomId) => {
+  socket.on('joined-room', (roomId) => {
+    socket.join(roomId);  
     console.log('Joined : ', roomId);
     // Leave the previously joined room (if any)
     Object.keys(socket.rooms).forEach((room) => {
@@ -64,9 +71,14 @@ io.on('connection', (socket) => {
     socket.emit("Room Joined");
   });
 
+
+  socket.on("user-typing", (roomId) => {
+    socket.in(roomId).emit("friend-typing",{roomId});
+  });
+
   
-  socket.on("stop typing", (room) => {
-    socket.in(room).emit("stop typing");
+  socket.on("user-stopped-typing", (roomId) => {
+    socket.in(roomId).emit("friend-stopped-typing", {roomId});
   });
   socket.on('new message', (newMessageRecieved) => {
     // console.log('newMessageRecieved!',newMessageRecieved);
@@ -79,14 +91,62 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.off('setup', (userData) => {
+////////////// VIDEO CALL LOGIC ////////////////////
+
+socket.on("initiate-video-call", (data) => {
+  const { roomId, offer, recieverUserData, senderUserData } = data;
+  console.log('📞 Video call initiated:', data);
+  console.log('📤 Sending to receiver ID:', recieverUserData._id);
+  
+  // Send to RECEIVER'S PERSONAL ROOM (not chat room)
+  // This ensures receiver gets notification anywhere in app
+  io.to(recieverUserData._id).emit("incoming-video-call", { 
+    fromRoomId: roomId, 
+    offer, 
+    fromUserDetails: {
+      _id: senderUserData._id,  // Include caller's user ID
+      email: senderUserData.email, 
+      username: senderUserData.username, 
+      image: senderUserData.image
+    } 
+  });
+  
+  console.log('✅ Call notification sent to receiver:', recieverUserData.username);
+});
+
+
+socket.on('video-call-accepted', (data) => {
+  const { answerOffer, callerRoomId, callerUserId } = data;
+  console.log('📞 Call accepted, sending answer to caller:', callerUserId);
+  // Send to caller's PERSONAL room (not chat room) to ensure they receive it
+  io.to(callerUserId).emit('called-user-accepted-your-call', { answerOffer });
+});
+
+// ICE Candidate exchange - Caller sends candidate to receiver
+socket.on('ice-candidate', (data) => {
+  const { candidate, targetUserId } = data;
+  console.log('🧊 ICE candidate received, forwarding to:', targetUserId);
+  io.to(targetUserId).emit('ice-candidate-received', { candidate });
+});
+
+////////////// END VIDEO CALL LOGIC ////////////////////
+
+
+
+
+
+
+  socket.on('disconnect', () => {
     console.log('User Disconnected');
-    socket.leave(userData._id)
+    // Socket.io automatically removes user from all rooms on disconnect
   });
 
 });
 
-// Start the server
-server.listen(port, () => {
+// Start the server - Listen on all network interfaces (0.0.0.0) to accept connections from local network
+server.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port ${port}`);
+  console.log(`Local: http://localhost:${port}`);
+  // console.log(`Network: http://192.168.29.122:${port}`);
+  console.log(`Network: http://172.24.171.114:${port}`);
 });

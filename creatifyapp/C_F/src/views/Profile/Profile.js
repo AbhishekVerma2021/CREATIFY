@@ -9,6 +9,8 @@ import AvatarIcon from '../../images/avatar.svg';
 import Paper from '@mui/material/Paper';
 import Tooltip from '@mui/material/Tooltip';
 import { toast } from 'react-toastify';
+import { Button } from '@mui/base';
+import { Button as MUIButton, Dialog, DialogTitle, IconButton, DialogContent, DialogActions } from '@mui/material';
 
 const Profile = (props) => {
   const [toggleListView, setToggleListView] = useState(false);
@@ -17,12 +19,47 @@ const Profile = (props) => {
     fetchProfileIdDetails,
   } = props;
 
+  const [inputImage, setInputImage] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+
   const {
     activeUserDetails,
+    uploadProfileImage,
     profilePostsData,
   } = props;
-  const { _id, username, email, followers, following } = activeUserDetails;
-  
+  const { _id, username, email, followers, following, image } = activeUserDetails;
+
+  const convertImageToBase64 = async () => {
+    const maxSizeMB = 37.5; // Approximate size considering Base64 inflation, adjust as needed
+    const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+    if (inputImage.size > maxSizeBytes) {
+      alert(`File size is too large. Please choose a file smaller than ${maxSizeMB} MB.`);
+      return Promise.reject(`File size is too large.`);
+    }
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(inputImage);
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  }
+
+  const handleImageUpload = async () => {
+    try {
+      const base64 = await convertImageToBase64();
+      await uploadProfileImage(base64);
+      setOpenDialog(false);
+    }
+    catch (error) {
+      alert('Something went wrong!!')
+    };
+  };
+
   useEffect(() => {
     try {
       fetchProfileIdDetails(_id);
@@ -37,7 +74,7 @@ const Profile = (props) => {
           <Paper className='leftProfileItemsContainer' elevation={3}>
             <Avatar
               alt={username}
-              src={AvatarIcon}
+              src={image && image.length > 0 ? image : AvatarIcon}
               sx={{ width: 150, height: 150 }}
             />
             <Tooltip title='User Name'>
@@ -51,6 +88,16 @@ const Profile = (props) => {
             </Tooltip>
             <Tooltip title='User Email'>
               <div class="profileEmail">9120522167</div>
+            </Tooltip>
+            <Tooltip title='User Email'>
+              <Button
+                variant="contained"
+                component="label"
+                style={{ cursor: 'pointer' }}
+                onClick={() => setOpenDialog(true)}
+              >
+                Profile Picture
+              </Button>
             </Tooltip>
             <Tooltip title='User Email'>
               <div class="profileEmail">Reset Password</div>
@@ -100,6 +147,35 @@ const Profile = (props) => {
           <div class="profilePostsMasterContainer">
             {profilePostsData && profilePostsData.length > 0 && profilePostsData.map((post) => <Paper elevation={5}><ProfilePost post={post} /></Paper>)}
           </div>
+          <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+            <DialogTitle>
+              Upload Image
+            </DialogTitle>
+            <DialogContent>
+              <MUIButton
+                variant="contained"
+                component="label"
+                style={{ cursor: 'pointer' }}
+              >
+                {inputImage.length <= 0 ? 'Upload Profile Image' : inputImage?.name}
+                <input
+                  type="file"
+                  name="coverImage"
+                  hidden
+                  onChange={(e) => setInputImage(e.target.files[0])}
+                />
+              </MUIButton>
+            </DialogContent>
+            <DialogActions>
+              <MUIButton onClick={() => handleImageUpload()}>
+                UPLOAD
+              </MUIButton>
+
+              <MUIButton onClick={() => setOpenDialog(false)}>
+                CLOSE
+              </MUIButton>
+            </DialogActions>
+          </Dialog>
         </div>
       </div>
     }

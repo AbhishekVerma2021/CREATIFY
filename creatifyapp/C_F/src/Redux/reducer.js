@@ -86,6 +86,13 @@ import {
   FETCH_CHAT_MESSAGE_REJECTED,
   SET_SOCKET_IN_STORE,
   SET_NOTIFICATION_ARRAY,
+  UPLOAD_PROFILE_PHOTO_PENDING,
+  UPLOAD_PROFILE_PHOTO_FULFILLED,
+  UPLOAD_PROFILE_PHOTO_REJECTED,
+  SET_PEER_IN_STORE,
+  SET_ANSWER_OFFER,
+  SET_REMOTE_STREAM,
+
 } from './actionTypes';
 
 import { toast } from 'react-toastify';
@@ -107,6 +114,7 @@ const initialState = {
     followers: [],
     following: [],
     favorites: [],
+    image: '',
   },
   selectedUserProfileDetails: {
     fetchedProfileUsername: '',
@@ -115,6 +123,7 @@ const initialState = {
     fetchedProfilePosts: [],
     fetchedProfileFollowers: [],
     fetchedProfileFollowing: [],
+    image: '',
   },
   userRegistrationSuccessful: undefined,
   postsComments: {},
@@ -127,6 +136,9 @@ const initialState = {
   allUserChats: [],
   activeChatMessagesArray: [],
   SOCKET: null,
+  PEER: null,
+  answerOffer: null,
+  remoteStream: null,
   notifications: [],
   isLoadingUsersList: true,
   isFullPageLoading: false,
@@ -140,6 +152,30 @@ const reducer = (state = initialState, action) => {
       const { newMessage } = action.payload;
       return {
         notifications: [newMessage, ...state.notifications],
+      }
+    }
+
+    case SET_REMOTE_STREAM: {
+      const { stream } = action.payload;
+      return {
+        ...state,
+        remoteStream: stream,
+      }
+    }
+
+    case SET_ANSWER_OFFER: {
+      const { answerOffer } = action.payload;
+      return {
+        ...state,
+        answerOffer,
+      }
+    }
+
+    case SET_PEER_IN_STORE: {
+      const { PEER } = action.payload;
+      return {
+        ...state,
+        PEER,
       }
     }
 
@@ -166,7 +202,7 @@ const reducer = (state = initialState, action) => {
       toast.success('Message Sent', {
         position: toast.POSITION.BOTTOM_LEFT,
       });
-      
+
       state.SOCKET.emit("new message", data);
       // console.log(_id, data)
       let newSelectedChatMessageArray = [...state.activeChatMessagesArray, data];
@@ -223,7 +259,7 @@ const reducer = (state = initialState, action) => {
       const { _id } = data;
       const newAllUserChats = state.allUserChats.map(chat => {
         // console.log(chat._id,_id)
-        if(chat._id === _id) return data;
+        if (chat._id === _id) return data;
         return chat;
       });
       // console.log(newAllUserChats);
@@ -297,7 +333,7 @@ const reducer = (state = initialState, action) => {
         ...state,
       }
     }
-    
+
     case CREATE_CHAT_GROUP: {
       return {
         ...state,
@@ -324,7 +360,7 @@ const reducer = (state = initialState, action) => {
         ...state,
       }
     }
-    
+
     case FETCH_ALL_CHATS: {
       return {
         ...state,
@@ -489,10 +525,17 @@ const reducer = (state = initialState, action) => {
         ...state,
       }
     }
+    case USER_LOGIN_STATUS_PENDING: {
+      return {
+        ...state,
+        isUserLoggedIn: false,
+        isFullPageLoading: true,
+      }
+    }
     case USER_LOGIN_STATUS_FULFILLED: {
       const { user, favoritePosts } = action.payload;
       const token = localStorage.getItem('TOKEN')
-      const { favorites, username, email, _id, followers, following } = user;
+      const { favorites, username, email, _id, followers, following, image } = user;
 
       return {
         ...state,
@@ -504,15 +547,11 @@ const reducer = (state = initialState, action) => {
           followers,
           following,
           favorites: favoritePosts,
+          image,
         },
         favoritePostIds: favorites,
         ussToken: token,
-      }
-    }
-    case USER_LOGIN_STATUS_PENDING: {
-      return {
-        ...state,
-        isUserLoggedIn: false,
+        isFullPageLoading: false,
       }
     }
     case USER_LOGIN_STATUS_REJECTED: {
@@ -523,6 +562,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isUserLoggedIn: false,
+        isFullPageLoading: false,
       }
     }
 
@@ -809,6 +849,30 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         isLoadingUsersList: false,
+      };
+    };
+
+    case UPLOAD_PROFILE_PHOTO_PENDING: {
+      return {
+        ...state,
+        isFullPageLoading: true,
+      };
+    };
+    case UPLOAD_PROFILE_PHOTO_FULFILLED: {
+      const { user, message } = action.payload;
+      // console.log(user, message);
+      toast.success(message);
+      return {
+        ...state,
+        activeUserDetails: user,
+        isFullPageLoading: false,
+      };
+    };
+    case UPLOAD_PROFILE_PHOTO_REJECTED: {
+      toast.error('Dome problem in image upload!!')
+      return {
+        ...state,
+        isFullPageLoading: false,
       }
     }
     default: return state;

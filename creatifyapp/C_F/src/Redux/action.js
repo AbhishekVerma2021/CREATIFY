@@ -80,9 +80,21 @@ import {
   FETCH_CHAT_MESSAGE_REJECTED,
   SET_SOCKET_IN_STORE,
   SET_NOTIFICATION_ARRAY,
+  UPLOAD_PROFILE_PHOTO_PENDING,
+  UPLOAD_PROFILE_PHOTO_REJECTED,
+  UPLOAD_PROFILE_PHOTO_FULFILLED,
+  USER_LOGIN_STATUS_PENDING,
+  SET_PEER_IN_STORE,
+  SET_ANSWER_OFFER,
+  SET_REMOTE_STREAM,
+
 } from './actionTypes';
 
 import axios from 'axios';
+
+// Backend API URL - Use IP address to work from phone on same network
+const API_BASE_URL = 'http://172.24.171.114:8000';
+// const API_BASE_URL = 'http://192.168.29.122:8000';
 
 export const submitUser = (username, email, password) => {
   const data = {
@@ -93,7 +105,7 @@ export const submitUser = (username, email, password) => {
 
   return {
     type: SUBMIT_USER,
-    payload: axios.post('https://creatify-backend.onrender.com/api/register', data)
+    payload: axios.post(`${API_BASE_URL}/api/register`, data)
       .then((res) => {
         return res.data; // Make sure to return the relevant data from the Promise
       })
@@ -113,13 +125,14 @@ export const loginUser = (email, password, navigate) => {
   return (dispatch) => {
     dispatch({ type: LOGIN_USER });
 
-    axios.post('https://creatify-backend.onrender.com/api/login', data)
+    axios.post(`${API_BASE_URL}/api/login`, data)
       .then((res) => {
         dispatch({ type: LOGIN_USER_FULFILLED, payload: res });
         navigate('/');
         // dispatch(fetchAllPostData());
       })
       .catch((err) => {
+        console.log("Login Error", err);
         dispatch({ type: LOGIN_USER_REJECTED, payload: err });
       });
   };
@@ -135,9 +148,10 @@ export const validateLoginStatus = (navigate, componentPath) => {
   }
   else {
     return (dispatch) => {
-      axios.get('https://creatify-backend.onrender.com/api/validateToken', {
+      dispatch({ type: USER_LOGIN_STATUS_PENDING })
+      axios.get(`${API_BASE_URL}/api/validateToken`, {
         headers: {
-          authorization: `Bearer ${localStorage.getItem('TOKEN')}`
+          authorization: `Bearer ${token}`
         }
       }).then(res => {
         dispatch({ type: USER_LOGIN_STATUS_FULFILLED, payload: res.data });
@@ -158,7 +172,7 @@ export const fetchAllPostData = () => {
     dispatch({ type: FETCH_ALL_POSTS_PENDING });
 
 
-    axios.post('https://creatify-backend.onrender.com/api/posts',
+    axios.post(`${API_BASE_URL}/api/posts`,
       { user: activeUserDetails },
       {
         headers: {
@@ -180,7 +194,7 @@ export const fetchProfileIdDetails = (profileId) => {
     const { ussToken } = getState();
 
     dispatch({ type: FETCH_PROFILE_DETAILS_PENDING });
-    axios.get(`https://creatify-backend.onrender.com/api/profile?_id=${profileId}`,
+    axios.get(`${API_BASE_URL}/api/profile?_id=${profileId}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -198,7 +212,7 @@ export const handleCommentOnPost = (commentString, postId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: USER_COMMENT_PENDING });
-    axios.post('https://creatify-backend.onrender.com/api/comment', {
+    axios.post(`${API_BASE_URL}/api/comment`, {
       comment: commentString,
       postId,
     },
@@ -220,7 +234,7 @@ export const fetchPostsComments = (postId) => {
     if (!Object.keys(postsComments).includes(postId)) {
       dispatch({
         type: FETCH_COMMENTS_FOR_POST,
-        payload: axios.get(`https://creatify-backend.onrender.com/api/fetchComments?postId=${postId}`,
+        payload: axios.get(`${API_BASE_URL}/api/fetchComments?postId=${postId}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -241,7 +255,7 @@ export const handleLikesAndDislikes = (postId, like) => {
     const { ussToken, activeUserDetails } = getState();
     const { _id } = activeUserDetails;
     dispatch({ type: HANDLE_LIKES_PENDING });
-    axios.post(`https://creatify-backend.onrender.com/api/like`,
+    axios.post(`${API_BASE_URL}/api/like`,
       {
         postId,
         like: !like,
@@ -299,7 +313,7 @@ export const createPost = (postData) => {
       const { ussToken } = getState();
       if (imageURL) {
         dispatch({ type: CREATE_POST_PENDING });
-        axios.post('https://creatify-backend.onrender.com/api/new-post', {
+        axios.post(`${API_BASE_URL}/api/new-post`, {
           url: imageURL,
           desc: description,
           caption,
@@ -329,7 +343,7 @@ export const followAccount = (accountId) => {
     const { ussToken } = getState();
     console.log(ussToken);
     dispatch({ type: FOLLOW_ACCOUNT_PENDING });
-    axios.post('https://creatify-backend.onrender.com/api/follow', {
+    axios.post(`${API_BASE_URL}/api/follow`, {
       followedAcountId: accountId,
     },
       {
@@ -351,7 +365,7 @@ export const setFavouritePost = (postId, postUid) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: FAVORITE_POST_PENDING });
-    axios.post('https://creatify-backend.onrender.com/api/toggleFavorite', {
+    axios.post(`${API_BASE_URL}/api/toggleFavorite`, {
       post_id: postId,
       post_uId: postUid,
     },
@@ -379,7 +393,7 @@ export const fetchAllUsers = () => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: FETCH_ALL_USERS_PENDING });
-    axios.get('https://creatify-backend.onrender.com/api/getUsers', {
+    axios.get(`${API_BASE_URL}/api/getUsers`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${ussToken}`,
@@ -388,13 +402,32 @@ export const fetchAllUsers = () => {
       .then(res => dispatch({ type: FETCH_ALL_USERS_FULFILLED, payload: res.data }))
       .catch(err => dispatch({ type: FETCH_ALL_USERS_REJECTED, payload: err }))
   }
-}
+};
+
+
+export const uploadProfileImage = (image) => {
+  console.log(image)
+  return (dispatch, getState) => {
+    const { ussToken } = getState();
+    dispatch({ type: UPLOAD_PROFILE_PHOTO_PENDING });
+    axios.post(`${API_BASE_URL}/api/uploadProfilePhoto`, { image },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${ussToken}`,
+      },
+    })
+    .then(res => dispatch({ type: UPLOAD_PROFILE_PHOTO_FULFILLED, payload: res.data }))
+    .catch(err => dispatch({ type: UPLOAD_PROFILE_PHOTO_REJECTED, payload: err }));
+  };
+};
+
 
 export const createNewChat = (userId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: CREATE_CHAT_PENDING });
-    axios.post('https://creatify-backend.onrender.com/api/chat', {
+    axios.post(`${API_BASE_URL}/api/chat`, {
       userId,
     },
       {
@@ -412,7 +445,7 @@ export const fetchAllChats = (token) => {
     const { ussToken } = getState();
     // console.log(ussToken)
     dispatch({ type: FETCH_ALL_CHATS_PENDING });
-    axios.get('https://creatify-backend.onrender.com/api/getUserChats', {
+    axios.get(`${API_BASE_URL}/api/getUserChats`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${ussToken ? ussToken : token}`,
@@ -427,7 +460,7 @@ export const createChatGroup = (usersIdArray, groupName) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: CREATE_CHAT_GROUP_PENDING });
-    axios.post('https://creatify-backend.onrender.com/api/createGroup', {
+    axios.post(`${API_BASE_URL}/api/createGroup`, {
       users: usersIdArray,
       group_name: groupName,
     }, {
@@ -445,7 +478,7 @@ export const editGroupName = (newGroupName, groupId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: RENAME_GROUP_PENDING });
-    axios.post('https://creatify-backend.onrender.com/api/renameGroup', {
+    axios.post(`${API_BASE_URL}/api/renameGroup`, {
       chatId: groupId,
       updated_name: newGroupName,
     }, {
@@ -463,7 +496,7 @@ export const addNewMemberToGroup = (memberId, groupId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: ADD_TO_GROUP_PENDING });
-    axios.post('https://creatify-backend.onrender.com/api/addToGroup', {
+    axios.post(`${API_BASE_URL}/api/addToGroup`, {
       chatId: groupId,
       userId: memberId,
     }, {
@@ -480,7 +513,7 @@ export const removeMemberFromGroup = (memberId, groupId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: REMOVE_FROM_GROUP_PENDING });
-    axios.post('https://creatify-backend.onrender.com/api/removeFromGroup', {
+    axios.post(`${API_BASE_URL}/api/removeFromGroup`, {
       chatId: groupId,
       userId: memberId,
     }, {
@@ -497,7 +530,7 @@ export const sendMessage = (chatId, messageContent) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: SEND_MESSAGE_PENDING });
-    axios.post('https://creatify-backend.onrender.com/api/sendMessage', {
+    axios.post(`${API_BASE_URL}/api/sendMessage`, {
       chatId,
       content: messageContent,
     }, {
@@ -515,7 +548,7 @@ export const fetchAllMessagesOfChat = (chatId) => {
   return (dispatch, getState) => {
     const { ussToken } = getState();
     dispatch({ type: FETCH_CHAT_MESSAGE_PENDING });
-    axios.get(`https://creatify-backend.onrender.com/api/${chatId}`, {
+    axios.get(`${API_BASE_URL}/api/${chatId}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${ussToken}`,
@@ -532,9 +565,34 @@ export const setSocketInStore = (socket) => {
   }
 };
 
+export const setPeerInStore = (peer) => {
+  return (dispatch) => {
+    dispatch({ type: SET_PEER_IN_STORE, payload: { PEER: peer } })
+  }
+};
+
+// export const setIncomingVideoCallFlag = (incomingVideoCallFlag) => {
+//   return (dispatch) => {
+//     dispatch({ type: SET_INCOMING_VIDEO_CALL_FLAG, payload: { incomingVideoCallFlag } })
+//   }
+// };
+
+export const setAnswerOffer = (offer) => {
+  return (dispatch) => {
+    dispatch({ type: SET_ANSWER_OFFER, payload: { offer } })
+  }
+};
+
+export const setRemoteStream = (stream) => {
+  return (dispatch) => {
+    dispatch({ type: SET_REMOTE_STREAM, payload: { stream } })
+  }
+}
+
 export const setNotificationArray = (newMessage) => {
-  console.log('----------------------------------------------------------------', newMessage)
   return (dispatch) => {
     dispatch({ type: SET_NOTIFICATION_ARRAY, payload: { newMessage } })
   };
 };
+
+

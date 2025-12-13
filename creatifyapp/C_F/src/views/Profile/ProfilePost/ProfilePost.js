@@ -38,7 +38,7 @@ const ProfilePost = (props) => {
     activeUserDetails,
     handleLikesAndDislikes,
     postsLikes,
-   } = props;
+  } = props;
 
   const {
     comments,
@@ -59,7 +59,7 @@ const ProfilePost = (props) => {
     minute: '2-digit',
     hour12: true, // Use 12-hour clock
   };
-  
+
   const formattedDate = new Intl.DateTimeFormat('en-US', options).format(inputDate);
   const {
     username,
@@ -72,7 +72,7 @@ const ProfilePost = (props) => {
     console.log(postsLikes)
     postsLikes && postsLikes[postId] && postsLikes[postId].forEach((like) => likesArray.push(like.uId));
     setLike(likesArray.includes(userId));
-  },[])
+  }, [])
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -92,11 +92,17 @@ const ProfilePost = (props) => {
     setLike(!like);
   }
 
+  const userImage = activeUserDetails && activeUserDetails.image ? activeUserDetails.image : '';
+
   return (
     <Card sx={{ maxWidth: 245 }}>
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+          userImage && userImage.length > 0 ? <Avatar
+            alt={username}
+            src={userImage}
+            sx={{ width: 40, height: 40 }}
+          /> : <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
             <span>{username.slice(0, 1).toUpperCase()}</span>
           </Avatar>
         }
@@ -116,7 +122,7 @@ const ProfilePost = (props) => {
         alt={caption}
       />
       <CardContent sx={{ padding: '5px 16px' }}>
-        <Typography variant="body2"  color="text.secondary">
+        <Typography variant="body2" color="text.secondary">
           {caption}
         </Typography>
       </CardContent>
@@ -125,7 +131,7 @@ const ProfilePost = (props) => {
           aria-label="add to favorites"
           onClick={() => handleLikes()}
         >
-          <FavoriteIcon style={{ color: like ? 'red' : 'inherit' }}/>
+          <FavoriteIcon style={{ color: like ? 'red' : 'inherit' }} />
         </IconButton>
         <IconButton aria-label="share" onClick={() => handleCommentDialog()}>
           <CommentIcon />

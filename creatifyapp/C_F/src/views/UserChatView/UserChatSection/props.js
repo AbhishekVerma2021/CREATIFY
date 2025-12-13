@@ -4,6 +4,7 @@ sendMessage,
 fetchAllMessagesOfChat,
 setNotificationArray,
 fetchAllChats,
+setPeerInStore,
 } from '../../../Redux/action';
 
 export const mapDispatchToProps = (dispatch) => ({
@@ -12,6 +13,7 @@ export const mapDispatchToProps = (dispatch) => ({
   fetchAllMessagesOfChat: (chatId) => dispatch(fetchAllMessagesOfChat(chatId)),
   fetchAllChats: (ussToken) => dispatch(fetchAllChats(ussToken)),
   setNotificationArray: (newMessage) => dispatch(setNotificationArray(newMessage)),
+  setPeerInStore: (peer) => dispatch(setPeerInStore(peer)),
 });
 
 export const mapStateToProps = (state) => ({
@@ -21,4 +23,5 @@ export const mapStateToProps = (state) => ({
   activeUserDetails: state.activeUserDetails,
   notifications: state.notifications,
   SOCKET: state.SOCKET,
+  PEER: state.PEER,
 });

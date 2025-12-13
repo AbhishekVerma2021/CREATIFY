@@ -6,6 +6,7 @@ import {
 export const mapDispatchToProps = (dispatch) => ({
     fetchAllPostData: () => dispatch(fetchAllPostData()),
     fetchAllUsers: () => dispatch(fetchAllUsers()),
+    // Note: setSocketInStore and setPeerInStore are now in App.js
 });
 
 export const mapStateToProps = (state) => ({
@@ -15,4 +16,6 @@ export const mapStateToProps = (state) => ({
     allUsersList: state.allUsersList,
     isLoading: state.isLoading,
     isLoadingUsersList: state.isLoadingUsersList,
+    SOCKET: state.SOCKET,
+    PEER: state.PEER
 });

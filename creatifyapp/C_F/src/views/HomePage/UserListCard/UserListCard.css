@@ -1,4 +1,1 @@
-.userListUsernameContainer {
-  display: flex;
-  justify-content: space-between;
-}
+/* Styles now handled by Material UI sx props */
