@@ -68,7 +68,7 @@ const CommentDialog = (props) => {
       aria-describedby="alert-dialog-slide-description"
       fullWidth={'50vw'}
     >
-      <DialogTitle>{"Comments"}{JSON.stringify(isCommentDialogLoading)}</DialogTitle>
+      <DialogTitle>{"Comments"}</DialogTitle>
       <DialogContent>
         {isCommentDialogLoading ? <div className="commentLoader"><CommentTextShimmer/></div> : <div className='commentsListContainer'>
           {

@@ -25,9 +25,10 @@ import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import LogoDevIcon from '@mui/icons-material/LogoDev';
+import { Tooltip, Badge, Stack, Paper } from '@mui/material';
 import './Sidebar.css';
 import { red } from '@mui/material/colors';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
 const Sidebar = (props) => {
@@ -41,6 +42,8 @@ const Sidebar = (props) => {
   };
 
   const navigate = useNavigate();
+  const location = useLocation();
+  
   const {
     children,
     setPageHeader,
@@ -96,8 +99,10 @@ const Sidebar = (props) => {
     setPageHeader('YOUR CHATS');
     navigate('/messages');
   };
+
   const handleLogout = () => {
     navigate('/login');
+    setPageHeader('HOME');
     localStorage.clear();
   }
 
@@ -139,136 +144,187 @@ const Sidebar = (props) => {
   // ======================================MAIN DRAWER===========================================================
 
 
+  const menuItems = [
+    { key: 'Home', icon: <HomeIcon />, label: 'Home', path: '/', onClick: handleHomePage },
+    { key: 'Profile', icon: <AccountCircleIcon />, label: 'Profile', path: '/profile', onClick: handleProfile },
+    { key: 'Create', icon: <AddBoxIcon />, label: 'Create', path: '/createPost', onClick: handleCreatePost },
+    { key: 'Favourites', icon: <FavoriteIcon />, label: 'Favorites', path: '/favorites', onClick: handleFavourites },
+    { key: 'Messages', icon: <QuestionAnswerIcon />, label: 'Messages', path: '/messages', onClick: handleMessages },
+  ];
+
   const container = window !== undefined ? () => window().document.body : undefined;
   const drawer = (
-    <div className={shrinkSidebar ? 'sideBarContainer listOfShrinkSidebar' : 'sideBarContainer'}>
-      {!shrinkSidebar && <span>
-        <div className='avatarConatiner'>
-          <Avatar sx={{ bgcolor: red[500], height: "125px", width: "125px" }} aria-label="recipe">
-            <span className="avatarForProfile">{username.slice(0, 1).toUpperCase()}</span>
-          </Avatar>
-        </div>
-        <div class="usernameContainer">
-          {username}
-        </div>
-        <div class="userEmailContainer">
-          {email}
-        </div>
-        <Divider />
-      </span>}
-      <List>
-        {shrinkSidebar && <ListItem key={'Logo'}
-          sx={{
-            marginBottom: '50px',
-          }}
-          disablePadding={!shrinkSidebar}>
-          <ListItemButton className={shrinkSidebar ? 'sideBarButton' : ''} >
-            <ListItemIcon sx={{
-              minWidth: '100%',
-              display: shrinkSidebar && 'flex',
-              justifyContent: shrinkSidebar && 'center'
-            }}>
-              <LogoDevIcon />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>}
-        {shrinkSidebar && <ListItem key={'Menu'} disablePadding={!shrinkSidebar} onClick={() => handleExpandSidebar()}>
-          <ListItemButton className={shrinkSidebar ? 'sideBarButton' : ''} >
-            <ListItemIcon sx={{
-              minWidth: '100%',
-              display: shrinkSidebar && 'flex',
-              justifyContent: shrinkSidebar && 'center'
-            }}>
-              <MenuOpenIcon />
-            </ListItemIcon>
-          </ListItemButton>
-        </ListItem>}
-        <ListItem key={'Home'} disablePadding={!shrinkSidebar} onClick={() => handleHomePage()}>
-          <ListItemButton className={shrinkSidebar ? 'sideBarButton' : ''}>
-            <ListItemIcon sx={{
-              minWidth: shrinkSidebar ? '100%' : '56px',
-              display: shrinkSidebar && 'flex',
-              justifyContent: shrinkSidebar && 'center'
-            }}>
-              <HomeIcon />
-            </ListItemIcon>
-            {!shrinkSidebar && <ListItemText primary={'Home'} />}
-          </ListItemButton>
-        </ListItem>
-        <ListItem key={'Profile'} disablePadding={!shrinkSidebar} onClick={() => handleProfile()}>
-          <ListItemButton className={shrinkSidebar ? 'sideBarButton' : ''}>
-            <ListItemIcon sx={{
-              minWidth: shrinkSidebar ? '100%' : '56px',
-              display: shrinkSidebar && 'flex',
-              justifyContent: shrinkSidebar && 'center'
-            }}>
-              <AccountCircleIcon />
-            </ListItemIcon>
-            {!shrinkSidebar && <ListItemText primary={'Profile'} />}
-          </ListItemButton>
-        </ListItem>
-        <ListItem key={'Favourites'} disablePadding={!shrinkSidebar} onClick={() => handleFavourites()}>
-          <ListItemButton className={shrinkSidebar ? 'sideBarButton' : ''}>
-            <ListItemIcon sx={{
-              minWidth: shrinkSidebar ? '100%' : '56px',
-              display: shrinkSidebar && 'flex',
-              justifyContent: shrinkSidebar && 'center'
-            }}>
-              <FavoriteIcon />
-            </ListItemIcon>
-            {!shrinkSidebar && <ListItemText primary={'Favourites'} />}
-          </ListItemButton>
-        </ListItem>
-        <ListItem key={'Messages'} disablePadding={!shrinkSidebar} onClick={() => handleMessages()}>
-          <ListItemButton className={shrinkSidebar ? 'sideBarButton' : ''}>
-            <ListItemIcon sx={{
-              minWidth: shrinkSidebar ? '100%' : '56px',
-              display: shrinkSidebar && 'flex',
-              justifyContent: shrinkSidebar && 'center'
-            }}>
-              <QuestionAnswerIcon />
-            </ListItemIcon>
-            {!shrinkSidebar && <ListItemText primary={'Messages'} />}
-          </ListItemButton>
-        </ListItem>
-        <ListItem key={'Create new post'} disablePadding={!shrinkSidebar} onClick={() => handleCreatePost()}>
-          <ListItemButton className={shrinkSidebar ? 'sideBarButton' : ''}>
-            <ListItemIcon sx={{
-              minWidth: shrinkSidebar ? '100%' : '56px',
-              display: shrinkSidebar && 'flex',
-              justifyContent: shrinkSidebar && 'center'
-            }}>
-              <AddBoxIcon />
-            </ListItemIcon>
-            {!shrinkSidebar && <ListItemText primary={'Create new post'} />}
-          </ListItemButton>
-        </ListItem>
-        <ListItem key={'Search'} disablePadding={!shrinkSidebar} onClick={(e) => toggleDrawer(true, e)}>
-          <ListItemButton className={shrinkSidebar ? 'sideBarButton' : ''}>
-            <ListItemIcon sx={{
-              minWidth: shrinkSidebar ? '100%' : '56px',
-              display: shrinkSidebar && 'flex',
-              justifyContent: shrinkSidebar && 'center'
-            }}>
-              <PersonSearchIcon />
-            </ListItemIcon>
-            {!shrinkSidebar && <ListItemText primary={'Search'} />}
-          </ListItemButton>
-        </ListItem>
-        <ListItem key={'Logout'} disablePadding={!shrinkSidebar} onClick={() => handleLogout()}>
-          <ListItemButton className={shrinkSidebar ? 'sideBarButton' : ''}>
-            <ListItemIcon sx={{
-              minWidth: shrinkSidebar ? '100%' : '56px',
-              display: shrinkSidebar && 'flex',
-              justifyContent: shrinkSidebar && 'center'
-            }}>
-              <LogoutIcon />
-            </ListItemIcon>
-            {!shrinkSidebar && <ListItemText primary={'Logout'} />}
-          </ListItemButton>
-        </ListItem>
+    <Box
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: 'background.paper',
+      }}
+    >
+      {/* User Profile Section */}
+      {!shrinkSidebar && (
+        <Box sx={{ p: 3, textAlign: 'center' }}>
+          <Stack spacing={2} alignItems="center">
+            <Avatar
+              sx={{
+                bgcolor: 'primary.main',
+                width: 100,
+                height: 100,
+                fontSize: '2.5rem',
+                fontWeight: 600,
+                boxShadow: 2,
+              }}
+            >
+              {username.slice(0, 1).toUpperCase()}
+            </Avatar>
+            <Box>
+              <Typography variant="h6" fontWeight={700} color="text.primary">
+                {username}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {email}
+              </Typography>
+            </Box>
+          </Stack>
+          <Divider sx={{ mt: 2 }} />
+        </Box>
+      )}
+      {/* Logo/Menu for shrunk sidebar */}
+      {shrinkSidebar && (
+        <Box sx={{ p: 2, textAlign: 'center' }}>
+          <Stack spacing={2} alignItems="center">
+            <Tooltip title="Creatify" placement="right">
+              <IconButton sx={{ color: 'primary.main' }}>
+                <LogoDevIcon sx={{ fontSize: 32 }} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Expand Menu" placement="right">
+              <IconButton onClick={handleExpandSidebar} sx={{ color: 'primary.main' }}>
+                <MenuOpenIcon />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+          <Divider sx={{ mt: 2 }} />
+        </Box>
+      )}
+
+      {/* Navigation Menu */}
+      <List sx={{ flex: 1, px: shrinkSidebar ? 1 : 2, py: 2 }}>
+        {menuItems.map((item) => {
+          const isActive = location.pathname === item.path;
+          return (
+            <Tooltip
+              key={item.key}
+              title={shrinkSidebar ? item.label : ''}
+              placement="right"
+            >
+              <ListItem
+                disablePadding
+                sx={{ mb: 1 }}
+              >
+                <ListItemButton
+                  onClick={item.onClick}
+                  sx={{
+                    borderRadius: 2,
+                    py: 1.5,
+                    px: shrinkSidebar ? 1.5 : 2,
+                    justifyContent: shrinkSidebar ? 'center' : 'flex-start',
+                    bgcolor: isActive ? 'primary.light' : 'transparent',
+                    color: isActive ? 'primary.main' : 'text.primary',
+                    '&:hover': {
+                      bgcolor: isActive ? 'primary.light' : 'action.hover',
+                    },
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <ListItemIcon
+                    sx={{
+                      minWidth: shrinkSidebar ? 'auto' : 48,
+                      color: isActive ? 'primary.main' : 'inherit',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {item.icon}
+                  </ListItemIcon>
+                  {!shrinkSidebar && (
+                    <ListItemText
+                      primary={item.label}
+                      primaryTypographyProps={{
+                        fontWeight: isActive ? 700 : 500,
+                        fontSize: '1rem',
+                      }}
+                    />
+                  )}
+                </ListItemButton>
+              </ListItem>
+            </Tooltip>
+          );
+        })}
+
+        {/* Search */}
+        <Tooltip title={shrinkSidebar ? 'Search' : ''} placement="right">
+          <ListItem disablePadding sx={{ mb: 1 }}>
+            <ListItemButton
+              onClick={(e) => toggleDrawer(true, e)}
+              sx={{
+                borderRadius: 2,
+                py: 1.5,
+                px: shrinkSidebar ? 1.5 : 2,
+                justifyContent: shrinkSidebar ? 'center' : 'flex-start',
+                '&:hover': {
+                  bgcolor: 'action.hover',
+                },
+                transition: 'all 0.2s',
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: shrinkSidebar ? 'auto' : 48, justifyContent: 'center' }}>
+                <PersonSearchIcon />
+              </ListItemIcon>
+              {!shrinkSidebar && (
+                <ListItemText
+                  primary="Search"
+                  primaryTypographyProps={{ fontWeight: 500, fontSize: '1rem' }}
+                />
+              )}
+            </ListItemButton>
+          </ListItem>
+        </Tooltip>
       </List>
-    </div>
+
+      {/* Logout at bottom */}
+      <Box sx={{ p: shrinkSidebar ? 1 : 2 }}>
+        <Divider sx={{ mb: 2 }} />
+        <Tooltip title={shrinkSidebar ? 'Logout' : ''} placement="right">
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={handleLogout}
+              sx={{
+                borderRadius: 2,
+                py: 1.5,
+                px: shrinkSidebar ? 1.5 : 2,
+                justifyContent: shrinkSidebar ? 'center' : 'flex-start',
+                color: 'error.main',
+                '&:hover': {
+                  bgcolor: 'error.lighter',
+                },
+                transition: 'all 0.2s',
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: shrinkSidebar ? 'auto' : 48, color: 'error.main', justifyContent: 'center' }}>
+                <LogoutIcon />
+              </ListItemIcon>
+              {!shrinkSidebar && (
+                <ListItemText
+                  primary="Logout"
+                  primaryTypographyProps={{ fontWeight: 600, fontSize: '1rem' }}
+                />
+              )}
+            </ListItemButton>
+          </ListItem>
+        </Tooltip>
+      </Box>
+    </Box>
   );
 
 
@@ -329,13 +385,14 @@ const Sidebar = (props) => {
         </Drawer>
         <Drawer
           variant="permanent"
-          // className='desktopScreenDrawer'
           sx={{
-            // width: "50px !important",
-            // backgroundColor: 'red',
-            border: '2px solid red',
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: shrinkSidebar ? 70 : drawerWidth },
+            '& .MuiDrawer-paper': { 
+              boxSizing: 'border-box', 
+              width: shrinkSidebar ? 70 : drawerWidth,
+              borderRight: '1px solid',
+              borderColor: 'divider',
+            },
           }}
           open
         >

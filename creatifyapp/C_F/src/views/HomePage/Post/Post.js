@@ -11,20 +11,18 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import CommentIcon from '@mui/icons-material/Comment';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import CommentDialog from '../../../components/CommentDialog';
 import StarIcon from '@mui/icons-material/Star';
-// import followIcon from '../../../images/follow.svg';
-// import followedIcon from '../../../images/following.svg';
-// import avatar from '../../../images/avatar.svg'
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
+import { Box, Chip, Divider, Stack, Tooltip } from '@mui/material';
+import CommentDialog from '../../../components/CommentDialog';
 import "./Post.css";
 import { useNavigate } from 'react-router-dom';
-
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -68,7 +66,6 @@ const Post = (props) => {
   } = post;
   const inputDate = new Date(date);
 
-  
   const options = {
     year: 'numeric',
     month: 'long',
@@ -77,7 +74,6 @@ const Post = (props) => {
     minute: '2-digit',
     hour12: true, // Use 12-hour clock
   };
-  
   const formattedDate = new Intl.DateTimeFormat('en-US', options).format(inputDate);
   const postId = _id;
   const userId = activeUserDetails?._id;
@@ -110,7 +106,6 @@ const Post = (props) => {
   useEffect(() => {
     let likesArray = [];
     postsLikes && postsLikes[postId] && postsLikes[postId].forEach((like) => likesArray.push(like.uId));
-    const { following } = activeUserDetails;
     setLike(likesArray.includes(userId));
   },[])
   const handleExpandClick = () => {
@@ -159,63 +154,219 @@ const Post = (props) => {
   };
 
   return (
-    <Card sx={{ maxWidth: "35vw", margin: "40px 0" }}>
+    <Card 
+      elevation={2}
+      sx={{ 
+        width: '100%',
+        borderRadius: 2,
+        overflow: 'hidden',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          boxShadow: 4,
+        },
+      }}
+    >
+      {/* Post Header */}
       <CardHeader
-        onClick={() => handleProfileViewClick()}
         avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+          <Avatar 
+            sx={{ 
+              bgcolor: 'primary.main',
+              width: 48,
+              height: 48,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+            onClick={() => handleProfileViewClick()}
+          >
             {username.slice(0, 1).toUpperCase()}
           </Avatar>
         }
         action={
-           postUserId !== userId && <IconButton aria-label="settings" onClick={() => handleFollowClick()}>
-            {follow ? <PersonRemoveIcon/> : <PersonAddIcon/>}
-          </IconButton>
+          postUserId !== userId && (
+            <Tooltip title={follow ? 'Unfollow' : 'Follow'}>
+              <IconButton 
+                onClick={() => handleFollowClick()}
+                sx={{
+                  bgcolor: follow ? 'error.light' : 'primary.light',
+                  color: 'white',
+                  '&:hover': {
+                    bgcolor: follow ? 'error.main' : 'primary.main',
+                  },
+                }}
+              >
+                {follow ? <PersonRemoveIcon fontSize="small" /> : <PersonAddIcon fontSize="small" />}
+              </IconButton>
+            </Tooltip>
+          )
         }
-        className='postHeader'
-        sx={{ fontWeight: "700", cursor: "pointer" }}
-        title={username}
-        subheader={formattedDate}
+        title={
+          <Typography 
+            variant="subtitle1" 
+            fontWeight={700}
+            sx={{ cursor: 'pointer' }}
+            onClick={() => handleProfileViewClick()}
+          >
+            {username}
+          </Typography>
+        }
+        subheader={
+          <Typography variant="caption" color="text.secondary">
+            {formattedDate}
+          </Typography>
+        }
+        sx={{ pb: 1 }}
       />
-      <div className='postImageConatiner'>
-        <img src={image} alt="" />
-      </div>
-      <CardContent>
-        <Typography variant="body2" sx={{ fontSize: "20px", color: "black" }} color="text.secondary">
-          {caption}
-        </Typography>
-      </CardContent>
-      <CardActions disableSpacing>
-        <IconButton
-          aria-label="add to favorites"
-          onClick={() => handleLikes()}
-        >
-          <FavoriteIcon style={{ color: like ? 'red' : 'inherit' }}/>
-        </IconButton>
-        <IconButton onClick={() => handleCommentDialog()}>
-          <CommentIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
-        <IconButton aria-label="Favorite" onClick={() => handleFavouritePostClick()}>
-          <StarIcon style={{ color: favoriteFlag ? '#FFD700' : 'inherit', }} />
-        </IconButton>
-        <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
+
+      {/* Post Image */}
+      <Box
+        sx={{
+          width: '100%',
+          height: 500,
+          bgcolor: 'grey.100',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        <img 
+          src={image} 
+          alt={caption}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+        />
+      </Box>
+
+      {/* Post Actions */}
+      <CardActions sx={{ px: 2, py: 1.5 }}>
+        <Stack direction="row" spacing={1} sx={{ flex: 1 }}>
+          <Tooltip title={like ? 'Unlike' : 'Like'}>
+            <IconButton
+              onClick={() => handleLikes()}
+              sx={{
+                color: like ? 'error.main' : 'inherit',
+                '&:hover': {
+                  bgcolor: like ? 'error.light' : 'action.hover',
+                },
+              }}
+            >
+              {like ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </IconButton>
+          </Tooltip>
+          
+          <Tooltip title="Comment">
+            <IconButton onClick={() => handleCommentDialog()}>
+              <CommentIcon />
+            </IconButton>
+          </Tooltip>
+          
+          <Tooltip title="Share">
+            <IconButton>
+              <ShareIcon />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Tooltip title={favoriteFlag ? 'Remove from favorites' : 'Add to favorites'}>
+            <IconButton 
+              onClick={() => handleFavouritePostClick()}
+              sx={{
+                color: favoriteFlag ? '#FFD700' : 'inherit',
+              }}
+            >
+              {favoriteFlag ? <StarIcon /> : <StarBorderIcon />}
+            </IconButton>
+          </Tooltip>
+          
+          {description && (
+            <Tooltip title={expanded ? 'Show less' : 'Show more'}>
+              <IconButton
+                onClick={handleExpandClick}
+                sx={{
+                  transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.3s',
+                }}
+              >
+                <ExpandMoreIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        </Stack>
       </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent sx={{ width: '35vw' }}>
-          {description}
-        </CardContent>
-      </Collapse>
-      {openCommentDialog && <CommentDialog postId={postId} comments={comments} handleCommentDialog={handleCommentDialog} />}
+
+      <Divider />
+
+      {/* Post Caption & Stats */}
+      <CardContent sx={{ py: 2 }}>
+        <Stack spacing={1.5}>
+          {/* Like Count */}
+          {likes && likes.length > 0 && (
+            <Typography variant="subtitle2" fontWeight={600}>
+              {likes.length} {likes.length === 1 ? 'like' : 'likes'}
+            </Typography>
+          )}
+
+          {/* Caption */}
+          <Box>
+            <Typography 
+              component="span" 
+              variant="body1" 
+              fontWeight={600}
+              sx={{ mr: 1, cursor: 'pointer' }}
+              onClick={() => handleProfileViewClick()}
+            >
+              {username}
+            </Typography>
+            <Typography 
+              component="span" 
+              variant="body1"
+              color="text.primary"
+            >
+              {caption}
+            </Typography>
+          </Box>
+
+          {/* Comments Count */}
+          {comments && comments.length > 0 && (
+            <Typography 
+              variant="body2" 
+              color="text.secondary"
+              sx={{ 
+                cursor: 'pointer',
+                '&:hover': { color: 'text.primary' },
+              }}
+              onClick={() => handleCommentDialog()}
+            >
+              View all {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
+            </Typography>
+          )}
+        </Stack>
+      </CardContent>
+
+      {/* Description Collapse */}
+      {description && (
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <Divider />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              {description}
+            </Typography>
+          </CardContent>
+        </Collapse>
+      )}
+
+      {openCommentDialog && (
+        <CommentDialog 
+          postId={postId} 
+          comments={comments} 
+          handleCommentDialog={handleCommentDialog} 
+        />
+      )}
     </Card>
   );
 }

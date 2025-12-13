@@ -1,0 +1,2 @@
+socket roomID in chat room or VC or AC will always be the chatID sleected at the moment not the usersId whose chat is sleected
+i.e: roomID will be user.chat._id 

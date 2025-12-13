@@ -141,6 +141,7 @@ const toggleFavoritePost = async (req, res) => {
         postId: post_id,
         username: postOwnerAccount.username,
         email: postOwnerAccount.email,
+        image: postOwnerAccount.image, 
       };
 
       userAccount.favorites.push(favouritePost);

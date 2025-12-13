@@ -8,10 +8,9 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import { IconButton } from '@mui/material';
+import { IconButton, Button, Box, Tooltip } from '@mui/material';
 import './UserListCard.css';
 import { useNavigate } from 'react-router-dom';
-
 
 const UserListCard = (props) => {
   const [follow, setFollow] = useState(false);
@@ -19,7 +18,6 @@ const UserListCard = (props) => {
   const { userDetails, activeUserDetails, followAccount, fetchProfileIdDetails } = props;
   const { username, _id, email } = userDetails;
   const activeUserId = activeUserDetails?._id;
-
 
   useEffect(() => {
     const { following } = activeUserDetails;
@@ -50,41 +48,89 @@ const UserListCard = (props) => {
     }
   };
 
-  return (<>
-    <ListItem alignItems="flex-start">
-      <ListItemAvatar>
-        <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-          {username.slice(0, 1).toUpperCase()}
-        </Avatar>
-      </ListItemAvatar>
-      <ListItemText
-        onClick={() => activeUserId !== _id ? handleProfileViewClick() : null}
+  return (
+    <>
+      <ListItem 
+        alignItems="flex-start"
         sx={{
-          cursor: 'pointer',
+          py: 2,
+          px: 2,
+          transition: 'all 0.2s',
+          '&:hover': {
+            bgcolor: 'action.hover',
+          },
         }}
-        primary={<div className='userListUsernameContainer'>
-          <span>{username}</span> {_id !== activeUserId && <IconButton aria-label="settings" onClick={() => handleFollowClick()}>
-            {follow ? <PersonRemoveIcon /> : <PersonAddIcon />}
-          </IconButton>}
-        </div>
-        }
-        secondary={
-          <React.Fragment>
+      >
+        <ListItemAvatar>
+          <Avatar 
+            sx={{ 
+              bgcolor: 'primary.main',
+              width: 48,
+              height: 48,
+              fontWeight: 600,
+              cursor: activeUserId !== _id ? 'pointer' : 'default',
+            }}
+            onClick={() => activeUserId !== _id ? handleProfileViewClick() : null}
+          >
+            {username && username.length > 0&& username.slice(0, 1).toUpperCase()}
+          </Avatar>
+        </ListItemAvatar>
+        
+        <ListItemText
+          onClick={() => activeUserId !== _id ? handleProfileViewClick() : null}
+          sx={{
+            cursor: activeUserId !== _id ? 'pointer' : 'default',
+            flex: 1,
+          }}
+          primary={
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography variant="subtitle1" fontWeight={600}>
+                {username}
+              </Typography>
+              {_id !== activeUserId && (
+                <Tooltip title={follow ? 'Unfollow' : 'Follow'}>
+                  <IconButton 
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleFollowClick();
+                    }}
+                    sx={{
+                      bgcolor: follow ? 'error.light' : 'primary.light',
+                      color: 'white',
+                      width: 32,
+                      height: 32,
+                      '&:hover': {
+                        bgcolor: follow ? 'error.main' : 'primary.main',
+                      },
+                    }}
+                  >
+                    {follow ? <PersonRemoveIcon sx={{ fontSize: 18 }} /> : <PersonAddIcon sx={{ fontSize: 18 }} />}
+                  </IconButton>
+                </Tooltip>
+              )}
+            </Box>
+          }
+          secondary={
             <Typography
-              sx={{ display: 'inline' }}
               component="span"
               variant="body2"
-              color="text.primary"
+              color="text.secondary"
+              sx={{
+                display: 'block',
+                mt: 0.5,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
             >
               {email}
             </Typography>
-
-          </React.Fragment>
-        }
-      />
-    </ListItem>
-    <Divider variant="inset" component="li" />
-  </>
+          }
+        />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+    </>
   );
 }
 

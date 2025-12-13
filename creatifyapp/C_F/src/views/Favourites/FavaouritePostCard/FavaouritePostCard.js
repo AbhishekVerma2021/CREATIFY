@@ -113,14 +113,19 @@ const FavaouritePostCard = (props) => {
     const favoritePostIdArray = favoritePostIds.map(post => post.postId);
     setCardDisplay(favoritePostIdArray.includes(postId));
   }, [favoritePostIds]);
+  const userImage = activeUserDetails && activeUserDetails.image ? activeUserDetails.image : '';
 
   return (<>
       {cardDisplayFlag && <Card sx={{ width: '30vw', maxWidth: 345 }} className='commanProfilePostCard'>
         <CardHeader
           avatar={
-            <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-              <span>{username.slice(0, 1).toUpperCase()}</span>
-            </Avatar>
+            userImage && userImage.length > 0 ? <Avatar
+            alt={username}
+            src={userImage}
+            sx={{ width: 40, height: 40 }}
+          /> : <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+            <span>{username.slice(0, 1).toUpperCase()}</span>
+          </Avatar>
           }
           title={username}
           subheader={formattedDate}
